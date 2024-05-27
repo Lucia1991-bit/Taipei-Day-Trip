@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "taipei-day-trip"
+version = "0.1.0"
+description = ""
+authors = ["lucia <thisislucia1991@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+uvicorn = "^0.29.0"
+mysql-connector-python = "^8.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
