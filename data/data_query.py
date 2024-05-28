@@ -4,6 +4,7 @@ import json
 
 
 # #檢查景點id是否存在
+# 這個指令結束後不能關資料庫，因為接著會繼續獲取資料
 def check_attraction_id(attractionID):
     try:
         with db.cursor(dictionary=True) as cursor:
@@ -16,10 +17,6 @@ def check_attraction_id(attractionID):
     except Exception as e:
         print("查詢資料時發生其他錯誤")
         raise e
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
 
 
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
@@ -50,7 +47,6 @@ def get_attraction_data_by_page_and_keyword(db, page, keyword, page_size):
             cursor.execute(sql_keyword, (keyword, keyword, f"%{
                 keyword}%", page_size, page * page_size,))
             results = cursor.fetchall()
-            print(results)
 
             # 獲取總頁數
             sql_page = """
@@ -64,7 +60,6 @@ def get_attraction_data_by_page_and_keyword(db, page, keyword, page_size):
 
             # 回傳資料類型是decimal
             total_page = int(cursor.fetchone()["total_page"])
-            print(total_page)
 
             # 如果沒有找到符合結果，回傳 None (fetchall()會回傳空列表)
             if len(results) == 0:
