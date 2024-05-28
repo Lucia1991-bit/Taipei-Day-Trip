@@ -155,4 +155,4 @@ def put_image_in_database(db, attractions):
 extract_data(attractions)
 # put_category_in_database(db, attractions)
 # put_attractions_in_database(db, attractions)
-put_image_in_database(db, attractions)
+# put_image_in_database(db, attractions)

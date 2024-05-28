@@ -164,7 +164,3 @@ def get_mrt_name(db):
         # 將連接歸還到連接池
         db.close()
         print("連接已歸還到連接池")
-
-
-if __name__ == "__main__":
-    get_attraction_data_by_page_and_keyword(db, 0, "ddddd", 12)
