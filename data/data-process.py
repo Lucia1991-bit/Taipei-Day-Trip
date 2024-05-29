@@ -20,7 +20,7 @@ def read_json_file():
     return data
 
 
-# 整理資料
+# 整理資料並提取需要的部分
 def extract_data(attractions):
 
     data = read_json_file()
@@ -46,7 +46,7 @@ def extract_data(attractions):
 
 
 # 放資料進 category及 mrt資料表
-def put_mrt_in_database(db, attractions):
+def put_mrt_and_category_in_database(db, attractions):
 
     for attraction in attractions:
         mrt = attraction["mrt"]
@@ -153,6 +153,6 @@ def put_image_in_database(db, attractions):
 
 
 extract_data(attractions)
-# put_category_in_database(db, attractions)
+# put_mrt_and_category_in_database(db, attractions)
 # put_attractions_in_database(db, attractions)
 # put_image_in_database(db, attractions)

@@ -43,7 +43,7 @@ async def thankyou(request: Request):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=400,
-        content=ErrorResponse(error=True, message="輸入的格式不正確，請按照指定格式輸入").dict()
+        content=ErrorResponse(error=True, message="輸入格式無效，請按照指定格式輸入").dict()
     )
 
 
@@ -74,17 +74,18 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
     except ValueError as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
     except Exception as e:
-        return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=500)
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
 
 
 # 依據景點id獲取景點資料
 @app.get("/api/attraction/{attractionID}")
-async def get_attraction_by_id(request: Request, db: db_depend, attractionID: int = Path(..., title='景點id', description='需要獲取的景點ID，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
+async def get_attraction_by_id(request: Request, db: db_depend, attractionID: int = Path(..., description='景點編號，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
     try:
-        # 檢查景點id是否存在，如果不存在，回報錯誤
+        # 檢查景點id是否存在，如果不存在，回報錯誤(減少之後的無效查詢)
         if check_attraction_id(attractionID) is None:
             return JSONResponse(content=ErrorResponse(error=True, message="景點編號不正確").dict(), status_code=400)
 
+        # 以 id獲取 attraction資料
         attraction_data = get_attraction_data_by_id(attractionID, db)
 
         if attraction_data is None:
@@ -103,10 +104,6 @@ async def get_mrt(request: Request, db: db_depend) -> Union[MRTData, ErrorRespon
     try:
         mrt_data = get_mrt_name(db)
         return MRTData(data=mrt_data)
+
     except Exception as e:
-        # 處理 FastAPI 引發的 HTTPException
-        if isinstance(e, HTTPException):
-            return ErrorResponse(error=True, message=str(e.detail), status_code=e.status_code)
-        # 處理其他未預期的異常
-        else:
-            return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
