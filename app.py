@@ -83,7 +83,7 @@ async def get_attraction_by_id(request: Request, db: db_depend, attractionID: in
     try:
         # 檢查景點id是否存在，如果不存在，回報錯誤(減少之後的無效查詢)
         if check_attraction_id(attractionID) is None:
-            return JSONResponse(content=ErrorResponse(error=True, message="景點編號不正確").dict(), status_code=400)
+            return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
         # 以 id獲取 attraction資料
         attraction_data = get_attraction_data_by_id(attractionID, db)
