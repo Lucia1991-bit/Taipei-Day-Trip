@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from typing import Annotated, Optional, Union
 from data.database import get_db
 from data.data_query import get_mrt_name, get_attraction_data_by_id, check_attraction_id, get_attraction_data_by_page_and_keyword
+from auth.validation import is_valid_keyword
 from model.model import *
 
 
@@ -50,19 +51,28 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.get("/api/attractions")
 async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, page: int = Query(..., description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字")) -> Union[AttractionPageResponse, ErrorResponse]:
     try:
+        # 驗證和過濾關鍵字參數(避免攻擊並減少無效查詢)
+        if not is_valid_keyword(keyword):
+            raise ValueError("無效的關鍵字")
+
+        # 每個分頁顯示幾筆資料
         page_size = 12
+
+        # 進行查詢
         attractions, next_page, total_page = get_attraction_data_by_page_and_keyword(
             db, page, keyword, page_size)
 
-        # 如果沒有結果
+        # 如果沒有結果，回應錯誤
         if attractions is None:
             return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
-        # 檢查輸入的page是否超過總頁數
+        # 檢查輸入的page是否超過總頁數，回應錯誤
         if page > total_page:
             return JSONResponse(content=ErrorResponse(error=True, message="頁碼超過範圍，查無資料").dict(), status_code=400)
 
         return AttractionPageResponse(nextPage=next_page, data=attractions)
+    except ValueError as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=500)
 
@@ -73,14 +83,15 @@ async def get_attraction_by_id(request: Request, db: db_depend, attractionID: in
     try:
         # 檢查景點id是否存在，如果不存在，回報錯誤
         if check_attraction_id(attractionID) is None:
-            return JSONResponse(content=ErrorResponse(error=True, message="此景點id不存在").dict(), status_code=400)
+            return JSONResponse(content=ErrorResponse(error=True, message="景點編號不正確").dict(), status_code=400)
 
         attraction_data = get_attraction_data_by_id(attractionID, db)
 
         if attraction_data is None:
             return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
-        return AttractionResponse(data=attraction_data)
+        else:
+            return AttractionResponse(data=attraction_data)
 
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)

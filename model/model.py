@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, condecimal
+from pydantic import BaseModel, Field, condecimal, root_validator
+from decimal import Decimal
 from typing import Optional, List
 
 
@@ -11,9 +12,9 @@ class AttractionData(BaseModel):
     address: str
     transport: str
     mrt: str
-    # 資料庫設定的資料類型是decimal，轉成 python可用的資料類型
-    lat: condecimal(decimal_places=10, max_digits=15)
-    lng: condecimal(decimal_places=10, max_digits=15)
+    # 資料庫設定的資料類型是decimal，導入decimal模組
+    lat: Decimal
+    lng: Decimal
     images: List[str]
 
 
