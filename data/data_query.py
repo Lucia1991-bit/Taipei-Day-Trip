@@ -1,5 +1,5 @@
 from .database import execute_query
-import mysql.connector
+from math import ceil
 import json
 
 
@@ -12,6 +12,7 @@ def check_attraction_id(attractionID):
 
 
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
+# === JOIN捷運站列表必須用 LEFT JOIN，不然捷運站為null的景點會被忽略
 def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
 
     sql_base = """
@@ -28,14 +29,16 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
       JSON_ARRAYAGG(i.url) AS images
     FROM attraction a
     JOIN category c ON c.id = a.category_id
-    JOIN mrt m ON m.id = a.mrt_id
+    LEFT JOIN mrt m ON m.id = a.mrt_id  
     JOIN image i ON i.attraction_id = a.id
     """
 
     # 如果未提供關鍵字，獲取所有景點資料
+    # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
+    # offset還是12
     if keyword == None:
         condition = ""
-        values = (page_size, page * page_size)
+        values = (page_size + 1, page * page_size)
 
     # 如果提供關鍵字，加上條件
     else:
@@ -58,37 +61,8 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
         img_list = json.loads(result["images"])
         result["images"] = img_list
 
-    return results
-
-
-# 獲得景點資料的總頁數
-def get_total_page(keyword, page, page_size):
-  # 獲取總頁數
-    sql_page = """
-    SELECT CEIL(COUNT(*) / %s) AS total_page
-    FROM attraction a
-    JOIN mrt m ON m.id = a.mrt_id
-    """
-
-    if keyword == None:
-        condition = ""
-        values = (page_size,)
-
-    else:
-        condition = "WHERE ( m.name = %s OR a.name LIKE %s)"
-        values = (page_size, keyword, f"%{keyword}%")
-
-    query = f"{sql_page} {condition}"
-
-    page_result = execute_query(query, values, fetch_method="fetchone")
-
-    # 回傳資料類型是decimal
-    total_page = int(page_result["total_page"])
-
-    # 顯示下一頁頁碼
-    next_page = page + 1 if page + 1 < total_page else None
     print("以關鍵字獲取景點資料成功")
-    return next_page, total_page
+    return results
 
 
 # 依據景點id獲取景點資料
@@ -106,7 +80,7 @@ def get_attraction_data_by_id(attractionID):
       a.lng,
       JSON_ARRAYAGG(i.url) AS images
       FROM attraction a
-      JOIN mrt ON mrt.id = a.mrt_id
+      LEFT JOIN mrt ON mrt.id = a.mrt_id
       JOIN category c ON c.id = a.category_id
       JOIN image i ON i.attraction_id = a.id
       WHERE a.id = %s;

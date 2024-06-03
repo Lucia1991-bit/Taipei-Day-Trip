@@ -1,15 +1,25 @@
 import mysql.connector
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from typing import Annotated, Optional, Union
 from data.database import get_db
-from data.data_query import get_mrt_name, get_attraction_data_by_id, check_attraction_id, get_attraction_data_by_page_and_keyword, get_total_page
+from data.data_query import get_mrt_name, get_attraction_data_by_id, check_attraction_id, get_attraction_data_by_page_and_keyword
 from auth.validation import is_valid_keyword
 from model.model import *
 
 
 app = FastAPI()
+
+# 配置 CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dependency: 獲取資料庫連接
 db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
@@ -67,15 +77,15 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
         if attractions is None:
             return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
-        # 得到結果，繼續查詢總頁數及下一頁的資料
         else:
-            next_page, total_page = get_total_page(keyword, page, page_size)
+            # 計算顯示在頁面的下一頁頁碼
+            # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
+            next_page = page + 1 if len(attractions) > 12 else None
 
-            # 檢查輸入的page是否超過總頁數，超過則回應錯誤
-            if page > total_page:
-                return JSONResponse(content=ErrorResponse(error=True, message="頁碼超過範圍，查無資料").dict(), status_code=400)
+            # 因為查了13筆，要把最後一筆除掉
+            attractions_of_page_size = attractions[:page_size]
 
-            return AttractionPageResponse(nextPage=next_page, data=attractions)
+            return AttractionPageResponse(nextPage=next_page, data=attractions_of_page_size)
 
     except ValueError as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)

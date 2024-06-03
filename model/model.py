@@ -11,7 +11,7 @@ class AttractionData(BaseModel):
     description: str
     address: str
     transport: str
-    mrt: str
+    mrt: Optional[str] = None
     # 資料庫設定的資料類型是decimal，導入decimal模組
     lat: Decimal
     lng: Decimal

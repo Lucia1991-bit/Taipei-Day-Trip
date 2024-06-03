@@ -41,7 +41,7 @@ db = get_db()
 # db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
 
 
-def execute_query(query, values=None, fetch_method="fetchall"):
+def execute_query(query, values=None, fetch_method="fetchone"):
     try:
         with db.cursor(dictionary=True) as cursor:
             if values:
