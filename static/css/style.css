@@ -427,11 +427,7 @@ main {
   background-color: #dedede;
 }
 
-.skeleton.show {
-  display: grid;
-}
-
-.skeleton.hide {
+.hide-skeleton {
   display: none;
 }
 

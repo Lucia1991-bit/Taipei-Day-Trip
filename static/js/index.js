@@ -1,12 +1,13 @@
 //獲取當前網址
-const currentURL = window.location.origin;
+// const currentURL = window.location.origin;
+const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
-const url = window.location.href;
-console.log(url);
+// const url = window.location.href;
+// console.log(url);
 
-const pathname = window.location.pathname;
-console.log(pathname);
+// const pathname = window.location.pathname;
+// console.log(pathname);
 
 //註冊/登入頁面所需元素
 const navLoginBtn = document.getElementById("nav_loginBtn");
@@ -25,7 +26,6 @@ console.log("script運行...");
 // Navigation ==== 點擊登入/註冊按鈕，彈出註冊/登入頁面
 navLoginBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  console.log("點擊");
   loginPage.classList.add("active")
   overlayEL.style.display = "block";
 })
@@ -58,8 +58,10 @@ loginLink.addEventListener("click", ()=> {
 
 
 //顯示捷運站列表
-async function displayMrtList() {
-  const { data } = await fetchMrtData();
+async function displayMrtList(results) {
+  if (!results) return;
+
+  const { data } = results;
 
   data.forEach( mrt => {
       const mrtItem = document.createElement("li");
@@ -145,7 +147,16 @@ function initListBarScroll() {
 function showSkeletonLoading() {
   const container = document.querySelector(".attractions_container");
 
-  //創建每頁 skeleton loading項目
+  // 檢查是否已經有 skeleton 元素,如果有則顯示它們
+  const existingSkeletons = container.querySelectorAll(".skeleton");
+  if (existingSkeletons.length > 0) {
+    existingSkeletons.forEach(skeleton => {
+      skeleton.classList.remove("hide-skeleton");
+    });
+    return;
+  }
+
+  // 如果沒有現有的 skeleton 元素,則創建新的
   for (let i = 0; i < 4; i++) {
     const skeleton = document.createElement("div");
     const img = document.createElement("div");
@@ -173,14 +184,17 @@ function hideSkeletonLoading() {
   const skeletons = document.querySelectorAll(".skeleton");
 
   skeletons.forEach(skeleton => {
-    skeleton.classList.add("hide");
-  })
+    skeleton.classList.add("hide-skeleton");
+  });
 }
 
 //顯示景點
 async function displayAttractions(results) {
 
-  if (!results) return;
+  if (!results) {
+    showErrorMessage("請求發生錯誤");
+    return;
+  }
 
   const { nextPage, data } =results;
 
@@ -232,7 +246,36 @@ async function displayAttractions(results) {
     container.appendChild(attractionItem);
   })
 
+  //觀察最後一個元素
+  observeLastItem(container);
+
 }
+
+// 創建 IntersectionObserver 並觀察最後一個元素
+function observeLastItem(container) {
+  let timeoutId;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      //滾動接近視窗底部並且有下一頁，停止觀察，加載下一頁
+      if (entry.isIntersecting && newNextPage) {
+        observer.unobserve(entry.target);
+
+        //使用debounce技巧，防止快速捲動觸發重複請求
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout( () => {
+           showLoading();
+        }, 300)
+      }
+    })
+  }, {threshold: 0.5})
+
+  const lastAttractionItem = container.lastElementChild;
+  if (lastAttractionItem) {
+    observer.observe(lastAttractionItem);
+  }
+}
+
+
 
 //加載更多資料
 async function displayMoreData() {
@@ -271,35 +314,6 @@ async function showLoading() {
 }
 
 
-//視窗滾動事件
-function handleScroll() {
-  //檢查有沒有下一頁以及檢查是不是正在滾動
-  if (newNextPage === null || isLoading) return;
-
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-
-  //滾動位置是否接近視窗底部
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
-      showLoading();
-  }
-}
-
-//監聽視窗滾動事件
-window.addEventListener('scroll', debounce(handleScroll, 300));
-
-
-// debounce，在觸發相同事件的情境下，停止觸發綁定事件的效果
-//防止快速重複滾動
-function debounce(func, delay) {
-  let timeoutId;
-  return function(...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
-
 // 使用表單搜尋
 function submitSearchForm() {
   const form = document.getElementById("searchForm");
@@ -320,6 +334,11 @@ async function searchAttractions(keyword) {
 
   const container = document.querySelector(".attractions_container");
   const results = await fetchAttractionData(0, keyword);
+
+  if (!results) {
+    showErrorMessage("查無相關景點資料");
+    return;
+  }
   
   //重設下一頁頁碼
   newNextPage = null;
@@ -335,6 +354,9 @@ async function searchAttractions(keyword) {
 
 //顯示錯誤訊息
 function showErrorMessage(message) {
+  //移除原本的錯誤訊息
+  removeErrorMessage();
+
   const container = document.querySelector(".main_container");
   const errorEL = document.createElement("div");
   errorEL.classList.add("error");
@@ -364,12 +386,12 @@ async function fetchAttractionData(page = 0, keyword = "") {
 
     //如果沒有關鍵字直接以page請求
     if (!keyword) {
-      url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
+      url = `${currentURL}/api/attractions?page=${page}`;
 
     } else {
       //關鍵字是中文，送到後端前需先編碼
       const encodedKeyword = encodeURIComponent(keyword);
-      url = `http://127.0.0.1:8000/api/attractions?page=${page}&keyword=${encodedKeyword}`;
+      url = `${currentURL}/api/attractions?page=${page}&keyword=${encodedKeyword}`;
     }
 
     const response = await fetch(url);
@@ -382,23 +404,32 @@ async function fetchAttractionData(page = 0, keyword = "") {
     return results;
 
   } catch (error) {
-    
-    //顯示錯誤訊息在頁面上
-    showErrorMessage(error);
+    hideSkeletonLoading();
+    console.log("Error:", error);
   }
 }
 
 //獲取捷運站名資料
 async function fetchMrtData() {
-  const response = await fetch("http://127.0.0.1:8000/api/mrts");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`${currentURL}/api/mrts`);
+    const results = await response.json();
+
+    if (!response.ok) {
+      throw new Error(results.message);
+    }
+    return results;
+  } catch (error) {
+    console.log("Error:", error);
+  }
+  
 }
 
 
 //加載頁面
 async function init() {
-  displayMrtList();
+  const mrtResults = await fetchMrtData();
+  displayMrtList(mrtResults);
   const results = await fetchAttractionData();
   displayAttractions(results);
   submitSearchForm();
