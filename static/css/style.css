@@ -69,6 +69,11 @@ body {
   font-weight: 700;
 }
 
+.nav_title_link {
+  text-decoration: none;
+  color: transparent;
+}
+
 .nav_list {
   display: flex;
   justify-content: space-between;
@@ -81,10 +86,20 @@ body {
   cursor: pointer;
 }
 
+.nav_list_item:hover {
+  color: #000;
+  font-weight: 600;
+}
+
 .nav_list a {
   text-decoration: none;
   color: var(--gray70);
 }
+
+.nav_list a:hover {
+  color: #000;
+}
+
 
 /* Pop up Signup / Login form*/
 .popup_container {
@@ -359,6 +374,7 @@ main {
 
 .list_item:hover {
   color: #000;
+  font-weight: 600;
 }
 
 .listBarbutton {

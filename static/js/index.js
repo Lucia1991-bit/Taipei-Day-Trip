@@ -1,6 +1,6 @@
 //獲取當前網址
-const currentURL = window.location.origin;
-// const currentURL = "http://0.0.0.0:8000";
+// const currentURL = window.location.origin; //在EC2上必須使用這個
+const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 // const url = window.location.href;
@@ -16,6 +16,9 @@ const signupPage = document.querySelector(".signup");
 const loginPage = document.querySelector(".login");
 const loginLink = document.getElementById("loginLink");
 const signUpLink = document.getElementById("signUpLink");
+
+//Attractions資料的容器
+const container = document.querySelector(".attractions_container");
 
 
 //紀錄景點資料下一頁頁碼
@@ -145,16 +148,15 @@ function initListBarScroll() {
 
 //顯示 skeleton loading動畫
 function showSkeletonLoading() {
-  const container = document.querySelector(".attractions_container");
 
-  // 檢查是否已經有 skeleton 元素,如果有則顯示它們
-  const existingSkeletons = container.querySelectorAll(".skeleton");
-  if (existingSkeletons.length > 0) {
-    existingSkeletons.forEach(skeleton => {
-      skeleton.classList.remove("hide-skeleton");
-    });
-    return;
-  }
+  // // 檢查是否已經有 skeleton 元素,如果有則顯示它們
+  // const existingSkeletons = container.querySelectorAll(".skeleton");
+  // if (existingSkeletons.length > 0) {
+  //   existingSkeletons.forEach(skeleton => {
+  //     skeleton.classList.remove("hide-skeleton");
+  //   });
+  //   return;
+  // }
 
   // 如果沒有現有的 skeleton 元素,則創建新的
   for (let i = 0; i < 4; i++) {
@@ -205,7 +207,6 @@ async function displayAttractions(results) {
 
   hideSkeletonLoading();
 
-  const container = document.querySelector(".attractions_container");
 
   data.forEach( attraction => {
     const attractionItem = document.createElement("div");
@@ -335,7 +336,12 @@ async function searchAttractions(keyword) {
   const container = document.querySelector(".attractions_container");
   const results = await fetchAttractionData(0, keyword);
 
+  console.log("為什麼",results);
+
   if (!results) {
+    //把原本的內容清空
+    container.innerHTML = "";
+
     showErrorMessage("查無相關景點資料");
     return;
   }
@@ -356,8 +362,8 @@ async function searchAttractions(keyword) {
 function showErrorMessage(message) {
   //移除原本的錯誤訊息
   removeErrorMessage();
-
-  const container = document.querySelector(".main_container");
+  container.innerHTML = "";
+  // const main = document.querySelector(".main_container");
   const errorEL = document.createElement("div");
   errorEL.classList.add("error");
   errorEL.textContent = message;
@@ -406,6 +412,7 @@ async function fetchAttractionData(page = 0, keyword = "") {
   } catch (error) {
     hideSkeletonLoading();
     console.log("Error:", error);
+    return null;
   }
 }
 
@@ -421,6 +428,7 @@ async function fetchMrtData() {
     return results;
   } catch (error) {
     console.log("Error:", error);
+    return null;
   }
   
 }
