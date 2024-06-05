@@ -59,7 +59,6 @@ loginLink.addEventListener("click", ()=> {
 })
 
 
-
 //顯示捷運站列表
 async function displayMrtList(results) {
   if (!results) return;
@@ -149,16 +148,7 @@ function initListBarScroll() {
 //顯示 skeleton loading動畫
 function showSkeletonLoading() {
 
-  // // 檢查是否已經有 skeleton 元素,如果有則顯示它們
-  // const existingSkeletons = container.querySelectorAll(".skeleton");
-  // if (existingSkeletons.length > 0) {
-  //   existingSkeletons.forEach(skeleton => {
-  //     skeleton.classList.remove("hide-skeleton");
-  //   });
-  //   return;
-  // }
-
-  // 如果沒有現有的 skeleton 元素,則創建新的
+  // 創建 skeleton loading item
   for (let i = 0; i < 4; i++) {
     const skeleton = document.createElement("div");
     const img = document.createElement("div");
@@ -205,6 +195,7 @@ async function displayAttractions(results) {
   newNextPage = nextPage;
   console.log("下一頁:", newNextPage);
 
+  // 隱藏 skeleton loading
   hideSkeletonLoading();
 
 
@@ -227,7 +218,7 @@ async function displayAttractions(results) {
     category.classList.add("category");
 
     image.src = attraction["images"][0];
-    attractionLink.href = `attraction.html?id=${attraction["id"]}`
+    attractionLink.href = `attraction/${attraction["id"]}`
     title.textContent = attraction["name"];
     mrt.textContent = attraction["mrt"];
     category.textContent = attraction["category"];
@@ -275,7 +266,6 @@ function observeLastItem(container) {
     observer.observe(lastAttractionItem);
   }
 }
-
 
 
 //加載更多資料
@@ -332,16 +322,13 @@ function submitSearchForm() {
 
 //搜尋景點資料
 async function searchAttractions(keyword) {
-
-  const container = document.querySelector(".attractions_container");
+  //把原本的內容清空
+  container.innerHTML = "";
+  
   const results = await fetchAttractionData(0, keyword);
 
-  console.log("為什麼",results);
 
   if (!results) {
-    //把原本的內容清空
-    container.innerHTML = "";
-
     showErrorMessage("查無相關景點資料");
     return;
   }
@@ -349,12 +336,11 @@ async function searchAttractions(keyword) {
   //重設下一頁頁碼
   newNextPage = null;
 
-  //把原本的結果清空
-  container.innerHTML = "";
-
-  //顯示搜尋結果
-  displayAttractions(results);
-  
+  //顯示搜尋結果，稍微延遲
+  setTimeout(() => {
+    displayAttractions(results);
+  }, 500)
+    
 }
 
 
@@ -432,7 +418,6 @@ async function fetchMrtData() {
   }
   
 }
-
 
 //加載頁面
 async function init() {
