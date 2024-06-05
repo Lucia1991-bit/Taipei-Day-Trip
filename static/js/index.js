@@ -256,10 +256,10 @@ function observeLastItem(container) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout( () => {
            showLoading();
-        }, 300)
+        }, 500)
       }
     })
-  }, {threshold: 0.5})
+  }, {threshold: 0.1})
 
   const lastAttractionItem = container.lastElementChild;
   if (lastAttractionItem) {
@@ -278,6 +278,7 @@ async function displayMoreData() {
 
 //監控如果資料請求已經被觸發，在資料還沒有加載完成前無法繼續滾動加載下一頁
 let isLoading = false; 
+
 
 //加載新頁面前顯示loader以及 skeleton動畫
 async function showLoading() {
@@ -300,7 +301,7 @@ async function showLoading() {
         await displayMoreData();
       }
       isLoading = false; // 加載完成,設置為未加載中
-    }, 500);
+    }, 800);
   }, 500);
 }
 
