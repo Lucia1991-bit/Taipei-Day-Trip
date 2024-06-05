@@ -26,7 +26,7 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
       m.name AS mrt,
       a.lat,
       a.lng,
-      JSON_ARRAYAGG(i.url) AS images
+      GROUP_CONCAT(i.url ORDER BY i.id) AS images
     FROM attraction a
     JOIN category c ON c.id = a.category_id
     LEFT JOIN mrt m ON m.id = a.mrt_id  
@@ -58,7 +58,7 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
 
     # 因為圖片列表是json格式，回傳前要先處理
     for result in results:
-        img_list = json.loads(result["images"])
+        img_list = result["images"].split(",")
         result["images"] = img_list
 
     print("以關鍵字獲取景點資料成功")
@@ -78,7 +78,7 @@ def get_attraction_data_by_id(attractionID):
       mrt.name AS mrt,
       a.lat,
       a.lng,
-      JSON_ARRAYAGG(i.url) AS images
+      GROUP_CONCAT(i.url ORDER BY i.id) AS images
       FROM attraction a
       LEFT JOIN mrt ON mrt.id = a.mrt_id
       JOIN category c ON c.id = a.category_id
@@ -94,7 +94,7 @@ def get_attraction_data_by_id(attractionID):
 
     # 因為圖片是json格式，回傳前要先處理
     else:
-        img_list = json.loads(results["images"])
+        img_list = results["images"].split(",")
         results["images"] = img_list
         print("以景點id獲取景點資料成功")
         return results

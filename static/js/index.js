@@ -1,6 +1,6 @@
 //獲取當前網址
-const currentURL = window.location.origin; //在EC2上必須使用這個
-// const currentURL = "http://127.0.0.1:8000";
+// const currentURL = window.location.origin; //在EC2上必須使用這個
+const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 // const url = window.location.href;
@@ -279,7 +279,6 @@ async function displayMoreData() {
 //監控如果資料請求已經被觸發，在資料還沒有加載完成前無法繼續滾動加載下一頁
 let isLoading = false; 
 
-
 //加載新頁面前顯示loader以及 skeleton動畫
 async function showLoading() {
   if (isLoading) return; // 如果正在加載中,直接返回
@@ -421,7 +420,9 @@ async function fetchMrtData() {
 }
 
 //加載頁面
-async function init() {
+async function init() { 
+  //初始化時重設下一頁頁碼
+  newNextPage = null;
   const mrtResults = await fetchMrtData();
   displayMrtList(mrtResults);
   const results = await fetchAttractionData();
