@@ -1,6 +1,6 @@
 //獲取當前網址
-// const currentURL = window.location.origin;
-const currentURL = "http://0.0.0.0:8000";
+const currentURL = window.location.origin;
+// const currentURL = "http://0.0.0.0:8000";
 console.log(currentURL);
 
 // const url = window.location.href;
