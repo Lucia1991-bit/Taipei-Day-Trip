@@ -56,6 +56,10 @@ body {
   align-items: center;
 }
 
+.nav.show {
+  border-bottom: 1px solid var(--gray20);
+}
+
 .nav .nav_container {
   width: 1200px;
   height: 100%;

@@ -21,6 +21,18 @@ const signUpLink = document.getElementById("signUpLink");
 const container = document.querySelector(".attractions_container");
 
 
+//NavBar設定滑到 attraction section時顯示border-bottom
+const navBar = document.querySelector(".nav");
+
+window.addEventListener("scroll", () => {
+  if (scrollY > 285) {
+    navBar.classList.add("show");
+  } else {
+    navBar.classList.remove("show");
+  }
+})
+
+
 //紀錄景點資料下一頁頁碼
 let newNextPage = null;
 
