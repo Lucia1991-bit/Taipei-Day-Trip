@@ -1,6 +1,6 @@
 //獲取當前網址
-const currentURL = window.location.origin; //在EC2上必須使用這個
-// const currentURL = "http://127.0.0.1:8000";
+// const currentURL = window.location.origin; //在EC2上必須使用這個
+const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 // const url = window.location.href;
@@ -92,10 +92,7 @@ function clickMrtAndSearch() {
       searchAttractions(searchInput.value);
 
       //搜尋完畢清空搜尋欄
-      setTimeout(() => {
-        searchInput.value = "";
-      }, 3000)
-
+      searchInput.value = "";
     })
   })
 }
@@ -198,7 +195,6 @@ async function displayAttractions(results) {
   // 隱藏 skeleton loading
   hideSkeletonLoading();
 
-
   data.forEach( attraction => {
     const attractionItem = document.createElement("div");
     const imgContainer = document.createElement("div");
@@ -218,7 +214,7 @@ async function displayAttractions(results) {
     category.classList.add("category");
 
     image.src = attraction["images"][0];
-    attractionLink.href = `attraction/${attraction["id"]}`
+    attractionLink.href = `attraction.html?id=${attraction["id"]}`
     title.textContent = attraction["name"];
     mrt.textContent = attraction["mrt"];
     category.textContent = attraction["category"];
@@ -339,7 +335,7 @@ async function searchAttractions(keyword) {
   //顯示搜尋結果，稍微延遲
   setTimeout(() => {
     displayAttractions(results);
-  }, 500)
+  }, 300)
     
 }
 
