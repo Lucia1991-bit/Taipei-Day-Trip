@@ -429,8 +429,8 @@ main {
 
 
 .attraction_item:hover {
-  transform: scale(1.05);
-  transition: all 0.4s ease-in-out;
+  transform: scale(1.04);
+  transition: all 0.3s ease-in-out;
 }
 
 
@@ -656,14 +656,13 @@ main {
     margin: 0 15px;
   }
 
-
   main {
     padding: 40px 0;
   }
 
   .main_container {
     width: calc(100% - 30px);
-    margin: 0 auto;
+    margin: 0 10px;
   } 
 
   .attraction_item_image {
