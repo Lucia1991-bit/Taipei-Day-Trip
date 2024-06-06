@@ -341,7 +341,7 @@ async function searchAttractions(keyword) {
   //紀錄目前搜尋關鍵字
   currentKeyword = keyword
 
-  // showSkeletonLoading();
+  showSkeletonLoading();
 
   const results = await fetchAttractionData(0, keyword);
 
@@ -356,9 +356,9 @@ async function searchAttractions(keyword) {
   newNextPage = null;
 
   //顯示搜尋結果，稍微延遲
-
+  setTimeout(() => {
     displayAttractions(results);
-
+  },  300)
 
 }
 
