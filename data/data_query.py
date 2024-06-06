@@ -43,7 +43,7 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
     # 如果提供關鍵字，加上條件
     else:
         condition = "WHERE( m.name = %s OR a.name LIKE %s )"
-        values = (keyword, f"%{keyword}%", page_size, page * page_size)
+        values = (keyword, f"%{keyword}%", page_size + 1, page * page_size)
 
     group_by = "GROUP BY a.id"
     limit_offset = "LIMIT %s OFFSET %s"
@@ -56,7 +56,7 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
     if len(results) == 0:
         return None
 
-    # 因為圖片列表是json格式，回傳前要先處理
+    # 因為圖片列表是字串格式，回傳前要先處理
     for result in results:
         img_list = result["images"].split(",")
         result["images"] = img_list

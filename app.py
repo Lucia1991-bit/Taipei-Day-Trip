@@ -66,7 +66,7 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
         if not is_valid_keyword(keyword):
             raise ValueError("無效的關鍵字")
 
-        # 每個分頁顯示幾筆資料
+        # 每個分頁顯示12筆資料(多取一筆為了檢查頁碼)
         page_size = 12
 
         # 景點資料查詢
@@ -80,10 +80,15 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
         else:
             # 計算顯示在頁面的下一頁頁碼
             # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
-            next_page = page + 1 if len(attractions) > 12 else None
+            next_page = page + 1 if len(attractions) == 13 else None
 
+            attractions_of_page_size = []
             # 因為查了13筆，要把最後一筆除掉
-            attractions_of_page_size = attractions[:page_size]
+            if len(attractions) == 13:
+                attractions_of_page_size = attractions[:12]
+
+            else:
+                attractions_of_page_size = attractions
 
             return AttractionPageResponse(nextPage=next_page, data=attractions_of_page_size)
 

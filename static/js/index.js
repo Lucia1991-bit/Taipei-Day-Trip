@@ -32,9 +32,10 @@ window.addEventListener("scroll", () => {
   }
 })
 
-
 //紀錄景點資料下一頁頁碼
 let newNextPage = null;
+//紀錄最後一次搜尋的關鍵字
+let currentKeyword = "";
 
 console.log("script運行...");
 
@@ -102,9 +103,6 @@ function clickMrtAndSearch() {
       keyword = searchInput.value.trim();
       //點擊捷運站名後，顯示在搜尋欄並搜尋
       searchAttractions(searchInput.value);
-
-      //搜尋完畢清空搜尋欄
-      searchInput.value = "";
     })
   })
 }
@@ -248,7 +246,6 @@ async function displayAttractions(results) {
 
   //觀察最後一個元素
   observeLastItem(container);
-
 }
 
 // 創建 IntersectionObserver 並觀察最後一個元素
@@ -263,7 +260,7 @@ function observeLastItem(container) {
         //使用debounce技巧，防止快速捲動觸發重複請求
         clearTimeout(timeoutId);
         timeoutId = setTimeout( () => {
-           showLoading();
+           showLoading(currentKeyword);
         }, 500)
       }
     })
@@ -275,10 +272,9 @@ function observeLastItem(container) {
   }
 }
 
-
 //加載更多資料
-async function displayMoreData() {
-  const results = await fetchAttractionData(newNextPage);
+async function displayMoreData(keyword) {
+  const results = await fetchAttractionData(newNextPage, keyword);
   // 顯示新的資料
   displayAttractions(results);
 }
@@ -288,7 +284,7 @@ async function displayMoreData() {
 let isLoading = false; 
 
 //加載新頁面前顯示loader以及 skeleton動畫
-async function showLoading() {
+async function showLoading(keyword) {
   if (isLoading) return; // 如果正在加載中,直接返回
 
   isLoading = true; // 設置為正在加載中
@@ -305,7 +301,7 @@ async function showLoading() {
 
     setTimeout(async () => {
       if (newNextPage) {
-        await displayMoreData();
+        await displayMoreData(keyword);
       }
       isLoading = false; // 加載完成,設置為未加載中
     }, 800);
@@ -333,11 +329,16 @@ async function searchAttractions(keyword) {
   //把原本的內容清空
   container.innerHTML = "";
   
+  //紀錄目前搜尋關鍵字
+  currentKeyword = keyword
+
   const results = await fetchAttractionData(0, keyword);
 
 
   if (!results) {
     showErrorMessage("查無相關景點資料");
+    // 重置 currentKeyword 為空字串
+    currentKeyword = ""; 
     return;
   }
   
@@ -357,7 +358,7 @@ function showErrorMessage(message) {
   //移除原本的錯誤訊息
   removeErrorMessage();
   container.innerHTML = "";
-  // const main = document.querySelector(".main_container");
+  
   const errorEL = document.createElement("div");
   errorEL.classList.add("error");
   errorEL.textContent = message;
@@ -431,8 +432,12 @@ async function fetchMrtData() {
 async function init() { 
   //初始化時重設下一頁頁碼
   newNextPage = null;
+  //初始化時重設關鍵字
+  currentKeyword = "";
+
   const mrtResults = await fetchMrtData();
   displayMrtList(mrtResults);
+
   const results = await fetchAttractionData();
   displayAttractions(results);
   submitSearchForm();
