@@ -103,6 +103,11 @@ function clickMrtAndSearch() {
       keyword = searchInput.value.trim();
       //點擊捷運站名後，顯示在搜尋欄並搜尋
       searchAttractions(searchInput.value);
+
+      //搜尋結束後清空搜尋欄
+      setTimeout(() => {
+        searchInput.value = "";
+      }, 500)
     })
   })
 }
@@ -154,9 +159,10 @@ function initListBarScroll() {
 
 //顯示 skeleton loading動畫
 function showSkeletonLoading() {
+  amount = currentKeyword? 4 : 8;
 
   // 創建 skeleton loading item
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < amount; i++) {
     const skeleton = document.createElement("div");
     const img = document.createElement("div");
     const info = document.createElement("div");
@@ -264,7 +270,7 @@ function observeLastItem(container) {
         }, 500)
       }
     })
-  }, {threshold: 0.1})
+  }, {threshold: 0.5})
 
   const lastAttractionItem = container.lastElementChild;
   if (lastAttractionItem) {
@@ -292,19 +298,18 @@ async function showLoading(keyword) {
   const loader = document.querySelector(".loader");
 
   loader.classList.add("show");
+ 
 
   //停留幾秒再顯示新資料
   setTimeout(() => {
-
+     showSkeletonLoading();
     loader.classList.remove("show");
-    showSkeletonLoading();
-
     setTimeout(async () => {
       if (newNextPage) {
         await displayMoreData(keyword);
       }
       isLoading = false; // 加載完成,設置為未加載中
-    }, 800);
+    }, 200);
   }, 500);
 }
 
@@ -332,8 +337,9 @@ async function searchAttractions(keyword) {
   //紀錄目前搜尋關鍵字
   currentKeyword = keyword
 
-  const results = await fetchAttractionData(0, keyword);
+  showSkeletonLoading();
 
+  const results = await fetchAttractionData(0, keyword);
 
   if (!results) {
     showErrorMessage("查無相關景點資料");
@@ -348,8 +354,8 @@ async function searchAttractions(keyword) {
   //顯示搜尋結果，稍微延遲
   setTimeout(() => {
     displayAttractions(results);
-  }, 300)
-    
+  }, 200)
+
 }
 
 
@@ -378,9 +384,6 @@ async function fetchAttractionData(page = 0, keyword = "") {
 
    // 移除之前的錯誤訊息 (如果存在)
   removeErrorMessage();
-
-  // 在獲取資料前顯示 skeleton loading 效果
-  showSkeletonLoading(); 
  
   try {
     let url;
@@ -435,11 +438,16 @@ async function init() {
   //初始化時重設關鍵字
   currentKeyword = "";
 
+  showSkeletonLoading();
+
   const mrtResults = await fetchMrtData();
   displayMrtList(mrtResults);
 
-  const results = await fetchAttractionData();
-  displayAttractions(results);
+  setTimeout(async() => {
+    const results = await fetchAttractionData();
+    displayAttractions(results);
+  }, 300)
+
   submitSearchForm();
 }
 

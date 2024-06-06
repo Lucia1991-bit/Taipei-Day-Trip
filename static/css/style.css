@@ -462,7 +462,7 @@ main {
 }
 
 .loading_image::before {
-  content: "";
+  background-color: #dedede;
   position: absolute;
   top: 0;
   left: 0;
@@ -597,6 +597,7 @@ main {
   display: none;
   align-self: center;
   bottom: 40px;
+  margin-top: -30px;
   margin-bottom: 10px;
   transition: opacity 0.2s ease-in;
 }

@@ -66,7 +66,7 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
         if not is_valid_keyword(keyword):
             raise ValueError("無效的關鍵字")
 
-        # 每個分頁顯示12筆資料(多取一筆為了檢查頁碼)
+        # 每個分頁顯示12筆資料
         page_size = 12
 
         # 景點資料查詢
