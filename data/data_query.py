@@ -1,161 +1,116 @@
-from .database import db
-import mysql.connector
+from .database import execute_query
+from math import ceil
 import json
 
 
 # #檢查景點id是否存在
 # 這個指令結束後不能關資料庫，因為接著會繼續獲取資料
 def check_attraction_id(attractionID):
-    try:
-        with db.cursor(dictionary=True) as cursor:
-            sql = "SELECT * FROM attraction WHERE id = %s"
-            cursor.execute(sql, (attractionID,))
-            result = cursor.fetchone()
-            return result
-    except mysql.connector.Error as e:
-        print(f"發生 SQL 錯誤: {e}")
-    except Exception as e:
-        print("查詢資料時發生其他錯誤")
-        raise e
+    query = "SELECT * FROM attraction WHERE id = %s"
+    values = (attractionID,)
+    return execute_query(query, values)
 
 
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
-def get_attraction_data_by_page_and_keyword(db, page, keyword, page_size):
-    try:
-        with db.cursor(dictionary=True) as cursor:
+# === JOIN捷運站列表必須用 LEFT JOIN，不然捷運站為null的景點會被忽略
+def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
 
-            sql_keyword = """
-            SELECT
-              a.id,
-              a.name,
-              c.name AS category,
-              a.description,
-              a.address,
-              a.transport,
-              m.name AS mrt,
-              a.lat,
-              a.lng,
-              JSON_ARRAYAGG(i.url) AS images
-            FROM attraction a
-            JOIN category c ON c.id = a.category_id
-            JOIN mrt m ON m.id = a.mrt_id
-            JOIN image i ON i.attraction_id = a.id
-            WHERE( %s IS NULL OR m.name = %s OR a.name LIKE %s )
-            GROUP BY a.id
-            LIMIT %s OFFSET %s;
-            """
-            cursor.execute(sql_keyword, (keyword, keyword, f"%{
-                keyword}%", page_size, page * page_size,))
-            results = cursor.fetchall()
+    sql_base = """
+    SELECT
+      a.id,
+      a.name,
+      c.name AS category,
+      a.description,
+      a.address,
+      a.transport,
+      m.name AS mrt,
+      a.lat,
+      a.lng,
+      GROUP_CONCAT(i.url ORDER BY i.id) AS images
+    FROM attraction a
+    JOIN category c ON c.id = a.category_id
+    LEFT JOIN mrt m ON m.id = a.mrt_id  
+    JOIN image i ON i.attraction_id = a.id
+    """
 
-            # 獲取總頁數
-            sql_page = """
-            SELECT CEIL(COUNT(*) / %s) AS total_page
-            FROM attraction a
-            JOIN mrt m ON m.id = a.mrt_id
-            WHERE ( %s IS NULL OR m.name = %s OR a.name LIKE %s)
-            """
-            cursor.execute(
-                sql_page, (page_size, keyword, keyword, f"%{keyword}%"))
+    # 如果未提供關鍵字，獲取所有景點資料
+    # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
+    # offset還是12
+    if keyword == None:
+        condition = ""
+        values = (page_size + 1, page * page_size)
 
-            # 回傳資料類型是decimal
-            total_page = int(cursor.fetchone()["total_page"])
+    # 如果提供關鍵字，加上條件
+    else:
+        condition = "WHERE( m.name = %s OR a.name LIKE %s )"
+        values = (keyword, f"%{keyword}%", page_size + 1, page * page_size)
 
-            # 如果沒有找到符合結果，回傳 None (fetchall()會回傳空列表)
-            if len(results) == 0:
-                return None, None, total_page
+    group_by = "GROUP BY a.id"
+    limit_offset = "LIMIT %s OFFSET %s"
 
-            # 因為圖片列表是json格式，回傳前要先處理
-            for result in results:
-                img_list = json.loads(result["images"])  # 因為圖片列表是json格式
-                result["images"] = img_list
+    query = f"{sql_base} {condition} {group_by} {limit_offset}"
 
-            # 顯示下一頁頁碼
-            next_page = page + 1 if page + 1 < total_page else None
-            print("以關鍵字獲取景點資料成功")
+    results = execute_query(query, values, fetch_method="fetchall")
 
-            return results, next_page, total_page
+    # 如果沒有找到符合關鍵字的景點資料，回傳 None (fetchall()會回傳空列表)
+    if len(results) == 0:
+        return None
 
-    except mysql.connector.Error as e:
-        print(f"發生 SQL 錯誤: {e}")
-    except Exception as e:
-        print("查詢資料時發生其他錯誤")
-        raise e
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
+    # 因為圖片列表是字串格式，回傳前要先處理
+    for result in results:
+        img_list = result["images"].split(",")
+        result["images"] = img_list
+
+    print("以關鍵字獲取景點資料成功")
+    return results
 
 
 # 依據景點id獲取景點資料
-def get_attraction_data_by_id(attractionID, db):
-    try:
-        with db.cursor(dictionary=True) as cursor:
-            sql = """
-              SELECT
-              a.id,
-              a.name,
-              c.name AS category,
-              a.description,
-              a.address,
-              a.transport,
-              mrt.name AS mrt,
-              a.lat,
-              a.lng,
-              JSON_ARRAYAGG(i.url) AS images
-              FROM attraction a
-              JOIN mrt ON mrt.id = a.mrt_id
-              JOIN category c ON c.id = a.category_id
-              JOIN image i ON i.attraction_id = a.id
-              WHERE a.id = %s;
-              """
-            cursor.execute(sql, (attractionID,))
-            results = cursor.fetchone()  # results是dict
+def get_attraction_data_by_id(attractionID):
+    sql = """
+      SELECT
+      a.id,
+      a.name,
+      c.name AS category,
+      a.description,
+      a.address,
+      a.transport,
+      mrt.name AS mrt,
+      a.lat,
+      a.lng,
+      GROUP_CONCAT(i.url ORDER BY i.id) AS images
+      FROM attraction a
+      LEFT JOIN mrt ON mrt.id = a.mrt_id
+      JOIN category c ON c.id = a.category_id
+      JOIN image i ON i.attraction_id = a.id
+      WHERE a.id = %s;
+    """
+    values = (attractionID,)
+    results = execute_query(sql, values, fetch_method="fetchone")
 
-            # 沒有符合的資料回傳 None
-            if results is None:
-                return None
-            # 因為圖片是josn格式，回傳前要先處理
-            else:
-                img_list = json.loads(results["images"])  # 因為圖片列表是json格式
-                results["images"] = img_list
-                print("以景點id獲取景點資料成功")
-                return results
+    # 沒有符合的資料回傳 None
+    if results is None:
+        return None
 
-    except mysql.connector.Error as e:
-        print(f"發生 SQL 錯誤: {e}")
-    except Exception as e:
-        print("查詢資料時發生其他錯誤")
-        raise e
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
+    # 因為圖片是json格式，回傳前要先處理
+    else:
+        img_list = results["images"].split(",")
+        results["images"] = img_list
+        print("以景點id獲取景點資料成功")
+        return results
 
 
 # 獲取捷運站名資料，並按照周邊景點數量排列
-def get_mrt_name(db):
-    try:
-        with db.cursor(dictionary=True) as cursor:
-            sql = """
-            SELECT mrt.name FROM mrt
-            JOIN attraction at ON mrt.id = at.mrt_id
-            GROUP BY mrt.name
-            ORDER BY COUNT(at.name) DESC;
-            """
-            cursor.execute(sql)
-            results = cursor.fetchall()
-            data = [result["name"] for result in results]
-            print("查詢捷運站資料成功")
+def get_mrt_name():
+    sql = """
+    SELECT mrt.name FROM mrt
+    JOIN attraction at ON mrt.id = at.mrt_id
+    GROUP BY mrt.name
+    ORDER BY COUNT(at.name) DESC;
+    """
+    values = None
+    results = execute_query(sql, values, fetch_method="fetchall")
 
-            return data
-
-    except mysql.connector.Error as e:
-        print(f"發生 SQL 錯誤: {e}")
-    except Exception as e:
-        print("查詢資料時發生其他錯誤")
-        raise e
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
+    data = [result["name"] for result in results]
+    print("查詢捷運站資料成功")
+    return data

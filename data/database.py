@@ -16,7 +16,8 @@ database_config = json.loads(database_config_str)
 # 資料庫連接設定
 pool = MySQLConnectionPool(
     pool_name="my_pool",
-    pool_size=20,
+    pool_size=10,
+    connection_timeout=1800,  # 單位為秒,1800秒 = 30分鐘
     ** database_config
 )
 
@@ -35,5 +36,30 @@ def get_db():
 
 db = get_db()
 
-# Dependency: 獲取資料庫連接
-db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
+
+# # Dependency: 獲取資料庫連接
+# db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
+
+
+def execute_query(query, values=None, fetch_method="fetchone"):
+    try:
+        with db.cursor(dictionary=True) as cursor:
+            if values:
+                cursor.execute(query, values)
+            else:
+                cursor.execute(query)
+
+            # 可控制cursor.fetchone()或者cursor.fetchall()
+            fetch_function = getattr(cursor, fetch_method)
+            result = fetch_function()
+
+            if not query.lstrip().upper().startswith("SELECT"):
+                db.commit()
+
+        return result
+
+    except mysql.connector.Error as e:
+        print(f"發生 SQL 錯誤: {e}")
+    except Exception as e:
+        print("查詢資料時發生其他錯誤")
+        raise e
