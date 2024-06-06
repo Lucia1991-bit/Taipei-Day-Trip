@@ -1,6 +1,6 @@
 //獲取當前網址
-const currentURL = window.location.origin; //在EC2上必須使用這個
-// const currentURL = "http://127.0.0.1:8000";
+// const currentURL = window.location.origin; //在EC2上必須使用這個
+const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 // const url = window.location.href;
@@ -103,11 +103,8 @@ function clickMrtAndSearch() {
       keyword = searchInput.value.trim();
       //點擊捷運站名後，顯示在搜尋欄並搜尋
       searchAttractions(searchInput.value);
-
       //搜尋結束後清空搜尋欄
-      setTimeout(() => {
-        searchInput.value = "";
-      }, 500)
+      // searchInput.value = "";
     })
   })
 }
@@ -168,19 +165,24 @@ function showSkeletonLoading() {
     const info = document.createElement("div");
     const text1 = document.createElement("p");
     const text2 = document.createElement("p");
+    const skeletonText1 = document.createElement("span");
+    const skeletonText2 = document.createElement("span");
 
     skeleton.classList.add("attraction_item", "skeleton");
     img.classList.add("attraction_item_image", "loading_image");
     info.classList.add("attraction_item_info");
-    text1.classList.add("mrt_name", "loading_mrt_name");
-    text2.classList.add("category", "loading_category");
+    skeletonText1.classList.add("loading", "mrt_name");
+    skeletonText2.classList.add("loading", "category");
 
+    text1.appendChild(skeletonText1);
+    text2.appendChild(skeletonText2);
     info.appendChild(text1);
     info.appendChild(text2);
     skeleton.appendChild(img);
     skeleton.appendChild(info);
 
     container.appendChild(skeleton);
+    console.log(skeleton);
   }
 }
 
@@ -192,6 +194,8 @@ function hideSkeletonLoading() {
     skeleton.classList.add("hide-skeleton");
   });
 }
+
+
 
 //顯示景點
 async function displayAttractions(results) {
@@ -223,11 +227,11 @@ async function displayAttractions(results) {
     const category = document.createElement("p");
     
     attractionItem.classList.add("attraction_item");
-    imgContainer.classList.add("attraction_item_image");
+    imgContainer.classList.add("attraction_item_image", "loading_image");
     itemTitle.classList.add("attraction_item_title");
     itemInfo.classList.add("attraction_item_info");
-    mrt.classList.add("mrt_name");
-    category.classList.add("category");
+    // mrt.classList.add("loading", "mrt_name");
+    // category.classList.add("loading", "category");
 
     image.src = attraction["images"][0];
     attractionLink.href = `attraction.html?id=${attraction["id"]}`
@@ -337,7 +341,7 @@ async function searchAttractions(keyword) {
   //紀錄目前搜尋關鍵字
   currentKeyword = keyword
 
-  showSkeletonLoading();
+  // showSkeletonLoading();
 
   const results = await fetchAttractionData(0, keyword);
 
@@ -352,9 +356,9 @@ async function searchAttractions(keyword) {
   newNextPage = null;
 
   //顯示搜尋結果，稍微延遲
-  setTimeout(() => {
+
     displayAttractions(results);
-  }, 200)
+
 
 }
 
@@ -452,7 +456,5 @@ async function init() {
 }
 
 init();
-
-
 
 
