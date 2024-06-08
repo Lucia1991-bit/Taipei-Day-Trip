@@ -65,7 +65,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 13.3px;
-  color:#757575;
+  color: #999;
 }
 
 .searchInput:focus {
@@ -157,7 +157,7 @@ main {
 }
 
 .list_item {
-  padding: 5px 15px;
+  padding: 10px 15px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -165,6 +165,12 @@ main {
 .list_item:hover {
   color: #000;
   font-weight: 600;
+}
+
+.list_item.active {
+  background-color: var(--cyan20);
+  color: var(--cyan70);
+  border-radius: 30px;
 }
 
 .listBarbutton {

@@ -58,16 +58,13 @@ async function displayMrtList(results) {
 
 //點擊捷運站名後，顯示在搜尋欄並搜尋
 function clickMrtAndSearch() {
-  const searchInput = document.querySelector(".searchInput");
   const mrtItems = document.querySelectorAll(".list_item");
 
   mrtItems.forEach(mrtItem => {
     mrtItem.addEventListener("click", (e) => {
-      searchInput.value = e.target.textContent;
-      keyword = searchInput.value.trim();
-
-      //點擊捷運站名後，顯示在搜尋欄並搜尋
-      searchAttractions(searchInput.value);
+      //點擊捷運站名後搜尋
+      const mrtKeyword = mrtItem.textContent;
+      searchAttractions(mrtKeyword);
       //搜尋結束後清空搜尋欄
       // searchInput.value = "";
     })
@@ -121,7 +118,7 @@ function initListBarScroll() {
 }
 
 //顯示 skeleton loading動畫
-function showSkeletonLoading() {
+function showSkeletonLoading(keyword = "") {
   const amount = currentKeyword? 4 : 8;
 
   // 創建 skeleton loading item
@@ -161,7 +158,7 @@ function hideSkeletonLoading() {
 }
 
 //顯示景點
-async function displayAttractions(results) {
+async function displayAttractions(results, keyword) {
 
   if (!results) {
     hideSkeletonLoading();
@@ -219,26 +216,22 @@ async function displayAttractions(results) {
   })
 
   //觀察最後一個元素
-  observeLastItem(container);
+  observeLastItem(container, keyword);
 }
 
 // 創建 IntersectionObserver 並觀察最後一個元素
-function observeLastItem(container) {
-  let timeoutId;
+function observeLastItem(container, keyword) {
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       //滾動接近視窗底部並且有下一頁，停止觀察，加載下一頁
       if (entry.isIntersecting && newNextPage) {
         observer.unobserve(entry.target);
-
-        //使用debounce技巧，防止快速捲動觸發重複請求
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout( () => {
-           showLoading(currentKeyword);
-        }, 500)
+        getNextPage(keyword);
       }
     })
   }, {threshold: 0.5})
+
 
 const lastAttractionItem = container.lastElementChild;
   if (lastAttractionItem) {
@@ -246,16 +239,14 @@ const lastAttractionItem = container.lastElementChild;
   }
 }
 
-//加載更多資料
-async function displayMoreData(keyword) {
-  const results = await fetchAttractionData(newNextPage, keyword);
-  // 顯示新的資料
-  displayAttractions(results);
-}
-
 
 //加載新頁面前顯示loader以及 skeleton動畫
-async function showLoading(keyword) {
+//防止重複加載，執行加載下一頁時先檢查是否正在loading
+async function getNextPage(keyword) {
+  let isLoading = false;
+
+  if (isLoading) return;
+  isLoading = true;
 
   const loader = document.querySelector(".loader");
 
@@ -267,9 +258,12 @@ async function showLoading(keyword) {
     loader.classList.remove("show");
     setTimeout(async () => {
       if (newNextPage) {
-        await displayMoreData(keyword);
+        const results = await fetchAttractionData(newNextPage, keyword);
+        // 顯示新的資料
+        displayAttractions(results, keyword);
+        isLoading = false;
       }
-    }, 200);
+    }, 300);
   }, 500);
 }
 
@@ -303,16 +297,16 @@ function submitSearchForm() {
 }
 
 //搜尋景點資料
-async function searchAttractions(keyword) {
+async function searchAttractions(keyword = "", mrt = "", category = "") {
   //把原本的內容清空
   container.innerHTML = "";
   
   //紀錄目前搜尋關鍵字
   currentKeyword = keyword
 
-  showSkeletonLoading();
+  showSkeletonLoading(keyword);
 
-  const results = await fetchAttractionData(0, keyword);
+  const results = await fetchAttractionData(0, keyword, mrt, category);
 
   if (!results) {
     showErrorMessage("查無相關景點資料");
@@ -326,7 +320,7 @@ async function searchAttractions(keyword) {
 
   //顯示搜尋結果，稍微延遲
   setTimeout(() => {
-    displayAttractions(results);
+    displayAttractions(results, keyword);
   },  300)
 }
 
