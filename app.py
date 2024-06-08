@@ -60,7 +60,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
 # 頁碼預設為 0
 @app.get("/api/attractions")
-async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, page: int = Query(0, description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字")) -> Union[AttractionPageResponse, ErrorResponse]:
+async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, page: int = Query(0, description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字"), mrt: str = Query(None, description="捷運站篩選"), category: str = Query(None, description="分類篩選")) -> Union[AttractionPageResponse, ErrorResponse]:
     try:
         # 驗證和過濾關鍵字參數(避免SQL injection並減少無效查詢)
         if not is_valid_keyword(keyword):
@@ -71,7 +71,7 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
 
         # 景點資料查詢
         attractions = get_attraction_data_by_page_and_keyword(
-            page, keyword, page_size)
+            page, keyword, mrt, category, page_size)
 
         # 如果沒有結果，回應錯誤
         if attractions is None:

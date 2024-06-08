@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
+
+:root {
+  --light: #FFFFFF;
+  --border: #CCCCCC;
+  --cyan70:#448899;
+  --cyan50:#66AABB;
+  --cyan20:#AADDEE;
+  --gray70: #666666;
+  --gray50: #757575;
+  --gray20: #E8E8E8;
+  --gray10: #F8F8F8;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Noto Sans TC", sans-serif;
+  line-height: 13.3px;
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light);
+  color: var(--gray70);
+  overflow-x: hidden;
+}
+
+/* Navigation Section */
+.nav {
+  background-color: var(--light);
+  position: fixed;
+  top: 0;
+  z-index: 7;
+  width: 100vw;
+  height: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--gray20);
+}
+
+.nav .nav_container {
+  width: 1200px;
+  height: 100%;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.nav_title {
+  color: var(--cyan70);
+  line-height: 34px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.nav_title_link {
+  text-decoration: none;
+  color: transparent;
+}
+
+.nav_list {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  text-decoration: none;
+}
+
+.nav_list_item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.nav_list_item:hover {
+  color: #000;
+  font-weight: 700;
+}
+
+.nav_list a {
+  text-decoration: none;
+  color: var(--gray70);
+}
+
+.nav_list a:hover {
+  color: #000;
+}
+
+
+/* Pop up Signup / Login form*/
+.overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background-color: rgba(0, 0, 0, 0.3);
+   z-index: 10;
+   display: none;
+}
+
+.popup_container {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width:340px;
+  border-radius: 6px;
+  background-color: var(--light);
+  box-shadow: 0 4px 60px #AAAAAA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 11;
+  padding: 25px 15px 15px 15px;
+  transition: all 1s ease-in-out;
+}
+
+
+.popup_container.login,
+.popup_container.signup {
+  display: none;
+}
+
+.popup_container.login.active,
+.popup_container.signup.active {
+  display: flex;
+}
+
+/* .popup_container.login {
+  height: 275px;
+} */
+
+/* .popup_container.signup {
+  height: 332px;
+} */
+
+.form_decoLine {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(-90deg, #337788 0%, #66AABB 50%, #337788 100%);
+  background-size: 200% 200%;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 50% 0;
+  }
+
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+.form_title {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 24px;
+  margin-bottom: 15px;
+}
+
+.form_container {
+  width: 100%;
+  height: 100%;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.form_control input {
+  width: 310px;
+  height: 47px;
+  padding-left: 15px;
+  border-radius: 6px;
+  border: 1px solid #CCCCCC;
+}
+
+/* 表格驗證錯誤 */
+
+/* 在 html插入錯誤訊息，並在目標input加.shake-effect class */
+.validate_error {
+  font-size: 13px;
+  color: #e34244;
+  margin-bottom: 5px;
+  display: none;
+  letter-spacing: 0.6px;
+  position: relative;
+  margin-left: 5px;
+}
+
+.validate_error i {
+  font-size: 12px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-440%, -50%);
+}
+
+.validate_error.show {
+  display: block;
+}
+
+@keyframes shake {
+  0% { margin-left: 0rem; }
+  25% { margin-left: 0.5rem; }
+  75% { margin-left: -0.5rem; }
+  100% { margin-left: 0rem; }
+}
+
+.shake-effect {
+  animation: shake 0.2s ease-in-out 0s 2;
+  box-shadow: 0 0 5px #e34244;
+}
+
+
+.formButton {
+  width: 100%;
+  padding: 12.75px;
+  border: none;
+  background-color: var(--cyan70);
+  border-radius: 6px;
+  color: var(--light);
+  font-size: 19px;
+  line-height: 16px;
+  font-weight: 300;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.formButton:active {
+  transform: scale(98%);
+}
+
+.link {
+  cursor: pointer;
+}
+
+.link:hover {
+  cursor: pointer;
+  color: var(--cyan50);
+  text-decoration: underline;
+}
+

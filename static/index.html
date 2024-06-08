@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="/static/css/utility.css">
   <link rel="stylesheet" href="/static/css/style.css">
   <link
       rel="stylesheet"
@@ -15,12 +17,9 @@
 </head>
 
 <body>
-
-
   <!-- Pop up Sign Up/ Login Section -->
-
   <!-- Login -->
-  <section class="popup_container login">
+  <section class="popup_container login" id="login">
     <div class="form_decoLine"></div>
 
     <div class="form_container">
@@ -28,9 +27,11 @@
 
       <form id="loginForm" class="form">
         <div class="form_control">
-          <input type="email" name="email" placeholder="輸入電子信箱">
+          <div class="validate_error show"><i class="fa-solid fa-circle-exclamation"></i> 信箱格式錯誤</div>
+          <input type="email" name="email" placeholder="輸入電子信箱" class="shake-effect">
         </div>
         <div class="form_control">
+          
           <input type="password" name="password" placeholder="輸入密碼">
         </div>
         <button type="submit" class="formButton button">
@@ -46,7 +47,7 @@
   </section>
 
   <!-- Signup -->
-  <section class="popup_container signup">
+  <section class="popup_container signup" id="signup">
     <div class="form_decoLine"></div>
 
     <div class="form_container">
@@ -73,9 +74,6 @@
       </form>
     </div>
   </section>
-
-
-
 
   <!-- Navigation Section-->
   <nav class="nav">
@@ -124,7 +122,7 @@
     </div>
   </header>
 
-
+  <!-- Main Section -->
   <main>
     <div class="main_container">
 
@@ -160,10 +158,6 @@
             <p class="category loading_category">&nbsp;</p>
           </div>
         </div> -->
-
-        
-
-        
       </div>
 
     </div>
@@ -180,10 +174,10 @@
      <p class="footer_text">COPYRIGHT © 2021 台北一日遊</p>
    </footer>
 
-   <!-- 最後一個讀取的元素會覆蓋在最上面 -->
+   <!-- 遮罩，最後一個讀取的元素會覆蓋在最上面 -->
    <div class="overlay"></div> 
 
-   <script src="/static/js/index.js"></script>
+   <script type="module" src="/static/js/index.js"></script>
   
 </body>
 </html>

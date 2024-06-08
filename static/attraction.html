@@ -1,12 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Attraction</title>
+  <link rel="stylesheet" href="/static/css/utility.css">
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="/static/css/attraction.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <title>景點導覽行程</title>
 </head>
 <body>
-  <h1>Hello</h1>
-  
+  <!-- Pop up Sign Up/ Login Section -->
+  <!-- Login -->
+  <section class="popup_container login" id="login">
+    <div class="form_decoLine"></div>
+
+    <div class="form_container">
+      <h3 class="form_title">登入會員帳號</h3>
+
+      <form id="loginForm" class="form">
+        <div class="form_control">
+          <input type="email" name="email" placeholder="輸入電子信箱">
+        </div>
+        <div class="form_control">
+          <input type="password" name="password" placeholder="輸入密碼">
+        </div>
+        <button type="submit" class="formButton button">
+          登入帳戶
+        </button>
+
+        <div class="form_linkContent">
+            還沒有帳戶？
+            <span class="link" id="signUpLink">點此註冊</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Signup -->
+  <section class="popup_container signup" id="signup">
+    <div class="form_decoLine"></div>
+
+    <div class="form_container">
+      <h3 class="form_title">註冊會員帳號</h3>
+
+      <form id="signupForm" class="form">
+        <div class="form_control">
+          <input type="text" name="name" placeholder="輸入姓名">
+        </div>
+        <div class="form_control">
+          <input type="email" name="email" placeholder="輸入電子信箱">
+        </div>
+        <div class="form_control">
+          <input type="password" name="password" placeholder="輸入密碼">
+        </div>
+        <button type="submit" class="formButton button">
+          註冊新帳戶
+        </button>
+
+        <div class="form_linkContent">
+            已經有帳戶了？
+            <span class="link" id="loginLink">點此登入</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Navigation Section-->
+  <nav class="nav">
+    <div class="nav_container">
+      <!-- Nav 標題 -->
+      <a class="nav_title_link" href="/">
+        <h2 class="nav_title">台北一日遊</h2>
+      </a>
+      <!-- Nav選單 -->
+      <ul class="nav_list">
+        <!-- 按鈕 -->
+        <li class="nav_list_item" id="nav_bookingBtn">
+          <a href="booking.html">預定行程</a>
+        </li>
+        <li class="nav_list_item" id="nav_loginBtn">
+          <span>登入/註冊</span>
+        </li>
+      </ul>
+    </div>
+  </nav>
+   <!-- Main Section -->
+  <main>
+    <div class="main_container hide">
+      <!-- Attraction & Schedule Section -->
+      <div class="slider_schedule_container">
+        <!-- 照片幻燈片 -->
+        <section class="slides_wrapper">
+          <div></div>
+          <!-- <ul class="slides_container">
+            <li class="slide"></li>
+            <li class="slide"></li>
+            <li class="slide"></li>
+          </ul>
+          <button class="slideBtn prev"></button>
+          <button class="slideBtn prev"></button> -->
+        </section>
+        <!-- 預定行程區 -->
+        <section class="schedule_container" id="schedule_container">
+          <h3 class="schedule_title">平安鐘</h3>
+          <p class="schedule_profile">公共藝術 at 忠孝復興</p>
+          
+          <div class="schedule_box">
+            <form action="" class="schedule_form">
+              <span class="schedule_form_title">訂購導覽行程</span>
+
+              <p class=schedule_form_info">以此景點為中心的一日行程，帶您探索城市角落故事</p>
+            
+              <div class="schedule_form_date">
+                <label class="schedule_form_label" for="date">選擇日期：</label>
+                <input class="schedule_form_date" type="date" name="date" id="date" value="2024-06-06">
+                <img src="/static/image/attraction-icon/icon_calendar.png" alt="date_icon" class="date_icon">
+              </div>
+
+              <div class="schedule_form_time">
+                <span class="schedule_form_label">選擇時間：</span>
+                
+                <input type="radio" id="morning" name="time" value="morning" checked />
+                <label for="morning" class="morning">上半天</label>
+                <input type="radio" id="afternoon" name="time" value="afternoon" />
+                <label for="afternoon" class="afternoon">下半天</label>
+
+              </div>
+
+              <div class="schedule_form_label">導覽費用：
+                <span class="schedule_form_price">新台幣 2000元</span>
+              </div>
+              
+
+              <button type="submit" class="schedule_form_button">
+                  開始預約行程
+              </button>
+            </form>
+          </div>
+        </section>
+      </div>
+
+      <!-- horizontal line -->
+      <div class="horizontal-line"></div>
+
+      <!-- 景點介紹 -->
+      <section class="attraction_info_container">
+        <p class="attraction_info_text description">平安鐘祈求大家的平安，這是為了紀念921地震週年的設計，在喧鬧的廣場上每個小時鳴鐘，保佑平安，祈禱臺灣不會再發生這樣的天災。雙手合十加上108個黃色的琉璃乳丁，隨著緩緩流下的水，在底下的一個小噴泉噴出。雙手合十的意義，一個是祈福，一個是包容，教我們要包容這樣的改變，撫平這樣的傷口。下面的水緩緩流出，代表著人的生命力是不斷地延續下去。緩緩地鐘聲，卻帶來心中的寧靜。 這個平安鐘是由建築師姚仁喜與琉璃創作家王俠軍共同設計，長6公尺、寬5公尺，以鑄銅製成，由法鼓山文教基金會全額出資。平安鐘點綴都市景觀，不時提醒大家，面對刻骨銘心的災難痛苦，更應該有謙卑的一顆心。</p>
+        
+        <span class="attraction_info_text bold">
+          景點地點：
+        <p class="attraction_info_text address">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Praesentium unde minus laudantium reiciendis facere, eius quibusdam rerum, labore aliquam commodi delectus quia quaerat ipsam? Velit sint amet voluptatem ipsum sequi. Delectus similique ad itaque consectetur est nobis cum quasi obcaecati.</p>
+        </span>
+
+        <span class="attraction_info_text bold">
+          交通方式：
+        <p class="attraction_info_text transport">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, ad quae ex porro eos rerum? Ipsum ex ea aliquid excepturi veniam quibusdam voluptas. Omnis repellat, nobis vitae sit eveniet saepe.</p>
+        </span>
+      
+      </section>
+
+    </div>
+    <!-- Skeleton Loading -->
+    <section class="main_container skeleton_container">
+        <div class="slider_schedule_container skeleton">
+         <section class="slides_wrapper loading"></section>
+         <section class="schedule_container skeleton">
+           <div class="schedule_title loading">&nbsp;</div>
+           <div class="schedule_profile loading">&nbsp;</div>
+           <div class="schedule_box loading"></div>
+         </section>
+        </div>
+
+        <div class="horizontal-line"></div>
+       
+       <section class="attraction_info_container skeleton">
+         <span class="attraction_info_text loading">&nbsp;</span>
+         <span class="attraction_info_text loading">&nbsp;</span>
+         <span class="attraction_info_text loading">&nbsp;</span>
+         <span class="attraction_info_text loading">&nbsp;</span>
+       </section>
+    </section>
+
+
+  </main>
+
+    <!-- Footer -->
+   <footer class="footer">
+     <p class="footer_text">COPYRIGHT © 2021 台北一日遊</p>
+   </footer>
+
+  <!-- 遮罩，最後一個讀取的元素會覆蓋在最上面 -->
+   <div class="overlay"></div> 
+
+<script type="module" src="/static/js/attraction.js"></script>  
 </body>
 </html>
