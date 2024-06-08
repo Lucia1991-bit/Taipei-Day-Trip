@@ -17,8 +17,16 @@
   padding: 0;
   margin: 0;
   font-family: "Noto Sans TC", sans-serif;
-  line-height: 13.3px;
   font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light);
+  color: var(--gray70);
+  overflow-x: hidden;
 }
 
 /* Navigation Section */
@@ -41,6 +49,7 @@
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0;
   margin: 0 auto;
 }
 
@@ -49,6 +58,7 @@
   line-height: 34px;
   font-size: 30px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .nav_title_link {
@@ -112,7 +122,6 @@
   padding: 25px 15px 15px 15px;
   transition: all 1s ease-in-out;
 }
-
 
 .popup_container.login,
 .popup_container.signup {
@@ -250,10 +259,8 @@
   text-decoration: underline;
 }
 
-/* RWD  */
-/* for Screen between 600px - 1200px */
 @media (max-width: 1240px) {
   .nav .nav_container {
-    padding: 0 15px;
+    margin: 0 15px;
   }
 }
