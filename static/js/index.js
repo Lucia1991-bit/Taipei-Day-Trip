@@ -58,12 +58,15 @@ async function displayMrtList(results) {
 
 //點擊捷運站名後，顯示在搜尋欄並搜尋
 function clickMrtAndSearch() {
+  const searchInput = document.querySelector(".searchInput");
   const mrtItems = document.querySelectorAll(".list_item");
 
   mrtItems.forEach(mrtItem => {
     mrtItem.addEventListener("click", (e) => {
-      //點擊捷運站名後搜尋
-      const mrtKeyword = mrtItem.textContent;
+      searchInput.value = e.target.textContent;
+      const mrtKeyword = searchInput.value.trim();
+
+      //點擊捷運站名後，顯示在搜尋欄並搜尋
       searchAttractions(mrtKeyword);
       //搜尋結束後清空搜尋欄
       // searchInput.value = "";
@@ -297,7 +300,7 @@ function submitSearchForm() {
 }
 
 //搜尋景點資料
-async function searchAttractions(keyword = "", mrt = "", category = "") {
+async function searchAttractions(keyword) {
   //把原本的內容清空
   container.innerHTML = "";
   
@@ -306,7 +309,7 @@ async function searchAttractions(keyword = "", mrt = "", category = "") {
 
   showSkeletonLoading(keyword);
 
-  const results = await fetchAttractionData(0, keyword, mrt, category);
+  const results = await fetchAttractionData(0, keyword);
 
   if (!results) {
     showErrorMessage("查無相關景點資料");

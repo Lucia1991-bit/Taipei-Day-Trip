@@ -21,15 +21,6 @@
   font-size: 16px;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--light);
-  color: var(--gray70);
-  overflow-x: hidden;
-}
-
 /* Navigation Section */
 .nav {
   background-color: var(--light);
@@ -50,7 +41,6 @@ body {
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0;
   margin: 0 auto;
 }
 
@@ -260,3 +250,10 @@ body {
   text-decoration: underline;
 }
 
+/* RWD  */
+/* for Screen between 600px - 1200px */
+@media (max-width: 1240px) {
+  .nav .nav_container {
+    padding: 0 15px;
+  }
+}

@@ -19,6 +19,30 @@ const description = document.querySelector(".description");
 const address = document.querySelector(".address");
 const transport = document.querySelector(".transport");
 
+
+
+// function initImageSlider() {
+//   const slidesWrapper = document.querySelector(".slides_wrapper");
+//   const prevButton = document.querySelector(".prev");
+//   const nextButton = document.querySelector(".next");
+
+//   //獲取所有景點圖片
+//   const images = slidesWrapper.querySelectorAll(".slide");
+
+//   // 往左按鈕 
+  
+
+// }
+
+
+
+
+
+
+
+
+
+
 function displayAttraction(results) {
   if (!results) {
     // showErrorMessage("請求發生錯誤");

@@ -14,6 +14,9 @@ function initModal() {
     e.preventDefault();
     loginPage.classList.add("active")
     overlayEL.style.display = "block";
+
+    // 禁止背景滾動
+    document.body.style.overflow = 'hidden';
   })
 
   // 點擊遮罩層時,關閉登入視窗和遮罩層
@@ -22,6 +25,8 @@ function initModal() {
       loginPage.classList.remove("active");
       signupPage.classList.remove("active");
       overlayEL.style.display = "none";
+      // 回復背景滾動
+      document.body.style.overflow = 'auto';
     }
   });
 
