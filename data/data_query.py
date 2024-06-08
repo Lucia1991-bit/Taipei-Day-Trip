@@ -1,3 +1,4 @@
+
 from .database import execute_query
 from math import ceil
 import json
@@ -13,11 +14,7 @@ def check_attraction_id(attractionID):
 
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
 # === JOIN捷運站列表必須用 LEFT JOIN，不然捷運站為null的景點會被忽略
-# 除了關鍵字外，也另外使用 mrt及 category 篩選結果
-def get_attraction_data_by_page_and_keyword(page, keyword=None, mrt=None, category=None, page_size=12):
-    # 如果未提供關鍵字，獲取所有景點資料
-    # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
-    # offset還是12
+def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
 
     sql_base = """
     SELECT
@@ -37,37 +34,22 @@ def get_attraction_data_by_page_and_keyword(page, keyword=None, mrt=None, catego
     JOIN image i ON i.attraction_id = a.id
     """
 
-    conditions = []
-    values = []
+    # 如果未提供關鍵字，獲取所有景點資料
+    # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
+    # offset還是12
+    if keyword == None:
+        condition = ""
+        values = (page_size + 1, page * page_size)
 
-    # 處理關鍵字搜尋
-    if keyword:
-        conditions.append("(m.name = %s OR a.name LIKE %s)")
-        values.extend([keyword, f"%{keyword}%"])
+    # 如果提供關鍵字，加上條件
+    else:
+        condition = "WHERE( m.name = %s OR a.name LIKE %s )"
+        values = (keyword, f"%{keyword}%", page_size + 1, page * page_size)
 
-    # 處理捷運站篩選
-    if mrt:
-        conditions.append("m.name = %s")
-        values.append(mrt)
-        print("用捷運站篩選")
-
-    # 處理分類篩選
-    if category:
-        conditions.append("c.name = %s")
-        values.append(category)
-        print("用分類篩選")
-
-    # 如果有多個篩選條件，用join將 conditions list結合成字串，中間以 AND分隔
-    # 如果只有一個條件，join()會直接轉換成字串，不會有 AND
-    condition = " AND ".join(conditions) if conditions else ""
     group_by = "GROUP BY a.id"
     limit_offset = "LIMIT %s OFFSET %s"
 
-    query = f"{sql_base} {
-        "WHERE " + condition if condition else ""} {group_by} {limit_offset}"
-
-    # 最後把 page條件也加進去
-    values.extend([page_size + 1, page * page_size])
+    query = f"{sql_base} {condition} {group_by} {limit_offset}"
 
     results = execute_query(query, values, fetch_method="fetchall")
 

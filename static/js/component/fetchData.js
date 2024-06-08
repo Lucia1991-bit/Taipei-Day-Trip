@@ -4,32 +4,20 @@ const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 //獲取景點資料
-async function fetchAttractionData(page = 0, keyword = "", mrt = "", category = "") {
+async function fetchAttractionData(page = 0, keyword = "") {
   
   try {
-    //建構查詢參數物件
-    const params = new URLSearchParams();
+    let url;
 
-    //當參數不為空時，把參數加入查詢物件變成key-value pair
-    //***這裡的 append() 是 URLSearchParams()專用的 method
-    if (keyword) {
-      params.append("keyword", keyword);
-    }
-    if (mrt) {
-      params.append("mrt", mrt);
-    }
-    if (category) {
-      params.append("category", category);
-    }
+    //如果沒有關鍵字直接以page請求
+    if (!keyword) {
+      url = `${currentURL}/api/attractions?page=${page}`;
 
-    //將 params轉成查詢字串
-    console.log(params);
-    const searchParams = params.toString();
-    console.log(searchParams);
-    //檢查searchParams，如果是空的，只送出 page網址，如果不為空，加上searchParams                       
-    const url = `${currentURL}/api/attractions?page=${page}${searchParams ? `&${searchParams}` : ""}`;
-    console.log(url);
-    
+    } else {
+      //關鍵字是中文，送到後端前需先編碼
+      const encodedKeyword = encodeURIComponent(keyword);
+      url = `${currentURL}/api/attractions?page=${page}&keyword=${encodedKeyword}`;
+    }
 
     const response = await fetch(url);
     const results = await response.json();
