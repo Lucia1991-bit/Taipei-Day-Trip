@@ -84,7 +84,6 @@ function initImageSlider(imageURLs) {
 
   // 真實的圖片數量
   imageCounts = amount + 2;
-  console.log(slidesWrapper);
 
   //按照要顯示的圖片數量創建頁面顯示器
   initPageIndicator(amount);
@@ -139,10 +138,8 @@ function clickHandler(direction) {
   slidesWrapper.style.transition = `transform 0.3s ease-in-out`;
   if (direction === "left") {
     currentIndex--;
-    console.log(`往前，現在的index: ${currentIndex}`);
   } else {
     currentIndex++;
-    console.log(`往後，現在的index: ${currentIndex}`);
   }
   moveSlides();
 }
@@ -171,7 +168,6 @@ function slideHandler() {
 function moveSlides() {
   slidesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
   updateIndicator();
-  console.log(imageCounts);
 }
 
 //顯示現在是哪張圖片
