@@ -1,6 +1,6 @@
 // 獲取當前網址
-// const currentURL = window.location.origin; //在EC2上必須使用這個
-const currentURL = "http://127.0.0.1:8000";
+const currentURL = window.location.origin; //在EC2上必須使用這個
+// const currentURL = "http://127.0.0.1:8000";
 console.log(currentURL);
 
 //獲取景點資料

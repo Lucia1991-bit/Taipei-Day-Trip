@@ -4,10 +4,10 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from typing import Annotated, Optional, Union
-from data.database import get_db
-from data.data_query import get_mrt_name, get_attraction_data_by_id, check_attraction_id, get_attraction_data_by_page_and_keyword
+from data.data_query import get_mrt_name, get_attraction_data_by_id, get_attraction_data_by_page_and_keyword, check_attraction_id
 from auth.validation import is_valid_keyword
 from model.model import *
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI()
@@ -21,8 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Dependency: 獲取資料庫連接
-db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
+
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 
 # Static Pages (Never Modify Code in this Block)
@@ -60,7 +60,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
 # 頁碼預設為 0
 @app.get("/api/attractions")
-async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, page: int = Query(0, description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字")) -> Union[AttractionPageResponse, ErrorResponse]:
+async def get_attraction_by_page_and_keyword(request: Request, page: int = Query(0, description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字")) -> Union[AttractionPageResponse, ErrorResponse]:
     try:
         # 驗證和過濾關鍵字參數(避免SQL injection並減少無效查詢)
         if not is_valid_keyword(keyword):
@@ -96,47 +96,35 @@ async def get_attraction_by_page_and_keyword(request: Request, db: db_depend, pa
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
 
 
 # 依據景點id獲取景點資料
 @app.get("/api/attraction/{attractionID}")
-async def get_attraction_by_id(request: Request, db: db_depend, attractionID: int = Path(..., description='景點編號，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
+async def get_attraction_by_id(request: Request, attractionID: int = Path(..., description='景點編號，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
     try:
-        # 檢查景點id是否存在，如果不存在，回報錯誤(減少之後的無效查詢)
-        if check_attraction_id(attractionID) is None:
-            return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
+        # 先查 id 是否存在
+        result = check_attraction_id(attractionID)
+        print("查詢景點id是否存在")
 
-        # 以 id獲取 attraction資料
-        attraction_data = get_attraction_data_by_id(attractionID)
-
-        if attraction_data is None:
+        # 如果 id不存在，回報錯誤
+        if result is None:
             return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
         else:
+            # 以正確的 id獲取 attraction資料
+            attraction_data = get_attraction_data_by_id(attractionID)
             return AttractionResponse(data=attraction_data)
 
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")
 
 
 # 獲取捷運站名列表
 @ app.get("/api/mrts")
-async def get_mrt(request: Request, db: db_depend) -> Union[MRTData, ErrorResponse]:
+async def get_mrt(request: Request) -> Union[MRTData, ErrorResponse]:
     try:
         mrt_data = get_mrt_name()
         return MRTData(data=mrt_data)
 
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
-    finally:
-        # 將連接歸還到連接池
-        db.close()
-        print("連接已歸還到連接池")

@@ -20,15 +20,6 @@
   font-size: 16px;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--light);
-  color: var(--gray70);
-  overflow-x: hidden;
-}
-
 /* Navigation Section */
 .nav {
   background-color: var(--light);
@@ -106,7 +97,7 @@ body {
 }
 
 .popup_container {
-  position: absolute;
+  position: fixed;
   top: 80px;
   left: 50%;
   transform: translateX(-50%);

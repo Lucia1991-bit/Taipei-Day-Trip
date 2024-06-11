@@ -5,6 +5,8 @@ from typing import Annotated
 import json
 from dotenv import load_dotenv
 import os
+import traceback
+from contextlib import contextmanager
 
 load_dotenv()
 
@@ -16,50 +18,59 @@ database_config = json.loads(database_config_str)
 # 資料庫連接設定
 pool = MySQLConnectionPool(
     pool_name="my_pool",
-    pool_size=10,
-    connection_timeout=1800,  # 單位為秒,1800秒 = 30分鐘
+    pool_size=20,
+    connection_timeout=300,  # 單位為秒
+    # pool_reset_session=True,  # 自動設定重新連線
     ** database_config
 )
 
 
 # 連接資料庫
+# 用 contextmanager管理連接的獲取和釋放
+@contextmanager
 def get_db():
+    # 初始化資料庫
+    db = None
     try:
         db = pool.get_connection()
         if db.is_connected():
+            # 執行效能測試
+            with db.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                _ = cursor.fetchone()
             print("資料庫連接成功")
-            return db
+            yield db
     except Exception as e:
         print(f"資料庫連接失敗: {e}")
+        # 追蹤錯誤
+        traceback.print_exc()
         raise e
+    finally:
+        if db and db.is_connected():
+            db.close()
+            print("連接已歸還到連接池")
 
 
-db = get_db()
-
-
-# # Dependency: 獲取資料庫連接
-# db_depend = Annotated[mysql.connector.MySQLConnection, Depends(get_db)]
-
-
+# 進行查詢
 def execute_query(query, values=None, fetch_method="fetchone"):
-    try:
-        with db.cursor(dictionary=True) as cursor:
-            if values:
-                cursor.execute(query, values)
-            else:
-                cursor.execute(query)
+    with get_db() as db:
+        try:
+            with db.cursor(dictionary=True) as cursor:
+                if values:
+                    cursor.execute(query, values)
+                else:
+                    cursor.execute(query)
 
-            # 可控制cursor.fetchone()或者cursor.fetchall()
-            fetch_function = getattr(cursor, fetch_method)
-            result = fetch_function()
+                # 可控制cursor.fetchone()或者cursor.fetchall()
+                fetch_function = getattr(cursor, fetch_method)
+                result = fetch_function()
 
-            if not query.lstrip().upper().startswith("SELECT"):
-                db.commit()
+                if not query.lstrip().upper().startswith("SELECT"):
+                    db.commit()
+            return result
 
-        return result
-
-    except mysql.connector.Error as e:
-        print(f"發生 SQL 錯誤: {e}")
-    except Exception as e:
-        print("查詢資料時發生其他錯誤")
-        raise e
+        except mysql.connector.Error as e:
+            print(f"查詢資料時發生 SQL 錯誤: {e}")
+        except Exception as e:
+            print("查詢資料時發生其他錯誤")
+            raise e
