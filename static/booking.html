@@ -1,11 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking</title>
+  <link rel="stylesheet" href="/static/css/utility.css">
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="/static/css/booking.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <title>訂購頁面</title>
 </head>
 <body>
+  <!-- Navigation Section-->
+  <nav class="nav">
+    <div class="nav_container">
+      <!-- Nav 標題 -->
+      <a class="nav_title_link" href="/">
+        <h2 class="nav_title">台北一日遊</h2>
+      </a>
+      <!-- Nav選單 -->
+      <ul class="nav_list">
+        <!-- 按鈕 -->
+        <li class="nav_list_item" id="nav_bookingBtn">
+          <a href="booking.html">預定行程</a>
+        </li>
+        <li class="nav_list_item" id="nav_loginBtn">
+          <span>登入/註冊</span>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Main Section -->
+  <main>
+
+    <!-- Welcome -->
+    <div class="main_container">
+      <h2 class="heading">您好，
+        <span class="heading_memeber_name">用戶名</span>，待預定的行程如下:
+      </h2>
+
+      <!-- 訂購資訊 -->
+      <section class="booking_info_container">
+        <div class="booking_image">
+          <img src="" alt="attraction_image">
+        </div>
+
+        <div class="booking_info">
+          <span class="booking_info_title bold">台北一日遊：
+          <p class="booking_info_title"></p>
+          </span>
+
+          <span class="booking_info_text bold">日期：
+            <p class="booking_info_text"></p>
+          </span>
+          <span class="booking_info_text bold">時間：
+            <p class="booking_info_text"></p>
+          </span>
+          <span class="booking_info_text bold">費用：
+            <p class="booking_info_text"></p>
+          </span>
+          <span class="booking_info_text bold">地點：
+            <p class="booking_info_text"></p>
+          </span>
+
+        </div>
+      </section>
+
+      <div class="horizontal-line"></div>
+
+      <!-- 聯絡資訊 -->
+      <section class="booking_contact_container">
+        <h3 class="booking_contact_title">您的聯絡資訊</h3>
+
+        <label for="name">聯絡姓名：</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="email">聯絡信箱：</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="name">手機號碼：</label>
+        <input type="text" name="phone" id="phone" required>
+
+        <p class="booking_contact_text bold"請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
+      </section>
+
+      <div class="horizontal-line"></div>
+
+      <!-- 付款資訊 -->
+      <section class="booking_payment_container">
+        <h3 class="booking_contact_title">信用卡付款資訊</h3>
+
+        <label for="name">卡片號碼：</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="name">過期時間：</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="name">驗證密碼：</label>
+        <input type="text" name="name" id="name" required>
+
+      </section>
+
+      <div class="horizontal-line"></div>
+
+      <span class="total_price">總價：新台幣 2000 元</span>
+      <button type="submit" class="submitBtn">確認訂購並付款</button>
+
+
+    </div>
+  </main>
   
 </body>
 </html>

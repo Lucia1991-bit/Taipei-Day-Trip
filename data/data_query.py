@@ -1,10 +1,10 @@
+
 from .database import execute_query
 from math import ceil
 import json
 
 
 # #檢查景點id是否存在
-# 這個指令結束後不能關資料庫，因為接著會繼續獲取資料
 def check_attraction_id(attractionID):
     query = "SELECT * FROM attraction WHERE id = %s"
     values = (attractionID,)
@@ -57,9 +57,10 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
         return None
 
     # 因為圖片列表是字串格式，回傳前要先處理
-    for result in results:
-        img_list = result["images"].split(",")
-        result["images"] = img_list
+    else:
+        for result in results:
+            img_list = result["images"].split(",")
+            result["images"] = img_list
 
     print("以關鍵字獲取景點資料成功")
     return results
@@ -67,6 +68,7 @@ def get_attraction_data_by_page_and_keyword(page, keyword, page_size):
 
 # 依據景點id獲取景點資料
 def get_attraction_data_by_id(attractionID):
+    # SQL的 group_concat參數長度預設值很小(1024)，圖片網址很長，因此必須重新設定他的 max_len
     sql = """
       SELECT
       a.id,
@@ -89,18 +91,20 @@ def get_attraction_data_by_id(attractionID):
     results = execute_query(sql, values, fetch_method="fetchone")
 
     # 沒有符合的資料回傳 None
-    if results is None:
+    # 資料庫找不到符合景點id時會回傳{id: None, name: None...}的字典
+    if results["id"] is None:
         return None
 
-    # 因為圖片是json格式，回傳前要先處理
     else:
+        # 因為圖片列表是字串格式，回傳前要先處理
         img_list = results["images"].split(",")
         results["images"] = img_list
-        print("以景點id獲取景點資料成功")
+        print(results)
         return results
 
-
 # 獲取捷運站名資料，並按照周邊景點數量排列
+
+
 def get_mrt_name():
     sql = """
     SELECT mrt.name FROM mrt
