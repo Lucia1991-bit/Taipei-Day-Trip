@@ -124,6 +124,17 @@ function initListBarScroll() {
   })
 }
 
+//檢查圖片是否完成加載，若完成加載，替換掉低解析度圖片
+function checkImageLoaded(image, imgContainer) {
+  if (image.complete) {
+    imgContainer.classList.add("loaded");
+  } else {
+    image.addEventListener("load", () => {
+      imgContainer.classList.add("loaded");
+    })
+  }
+}
+
 //創建景點元素
 function createAttractionItem(attraction) {
   const attractionItem = document.createElement("div");
@@ -137,17 +148,26 @@ function createAttractionItem(attraction) {
   const category = document.createElement("p");
   
   attractionItem.classList.add("attraction_item");
-  imgContainer.classList.add("attraction_item_image", "loading_image");
+  imgContainer.classList.add("attraction_item_image");
   itemTitle.classList.add("attraction_item_title");
   itemInfo.classList.add("attraction_item_info");
   // mrt.classList.add("loading", "mrt_name");
   // category.classList.add("loading", "category");
 
+  //獲取低解析度圖片路徑(在與景點同名資料夾)
+  const name = attraction["name"].replace(/ /g, "_");
+  const lowerResImageUrl = `/static/image/low_res_images/${name}/1.jpg`;    
+  imgContainer.style.backgroundImage = `url("${lowerResImageUrl}")`;
+
+  //真正圖片
   image.src = attraction["images"][0];
   //啟用圖片 lazing loading
   image.loading = "lazy";
 
-  // attractionLink.href = `attraction.html?id=${attraction["id"]}`;
+  //監聽圖片是否完成加載，若完成加載，替換掉低解析圖片
+  checkImageLoaded(image,imgContainer);
+
+
   attractionLink.href = `/attraction/${attraction["id"]}`;
   title.textContent = attraction["name"];
   mrt.textContent = attraction["mrt"];
@@ -184,7 +204,6 @@ async function displayAttractions(results) {
   hideSkeletonLoading();
 
   data.forEach( attraction => {
-
     const  attractionItem = createAttractionItem(attraction);
     container.appendChild(attractionItem);
   })

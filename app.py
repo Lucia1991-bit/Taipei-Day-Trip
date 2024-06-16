@@ -181,6 +181,12 @@ async def get_attraction_by_page_and_keyword(request: Request, page: int = Query
             else:
                 attractions_of_page_size = attractions
 
+            # # 取得低解析度圖片
+            # for attraction in attractions_of_page_size:
+            #     low_res_image = get_first_low_res_image_by_attraction_id(
+            #         attraction["id"])
+            #     attraction["low_image"] = low_res_image
+
             return AttractionPageResponse(nextPage=next_page, data=attractions_of_page_size)
 
     except ValueError as e:

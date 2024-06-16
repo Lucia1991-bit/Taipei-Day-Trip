@@ -3,7 +3,7 @@ from math import ceil
 import json
 
 
-# #檢查景點id是否存在
+# 檢查景點id是否存在
 def check_attraction_id(attractionID):
     print("查詢景點id是否存在")
     query = "SELECT * FROM attraction WHERE id = %s"
