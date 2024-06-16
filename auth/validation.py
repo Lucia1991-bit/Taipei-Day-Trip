@@ -1,8 +1,7 @@
 import re
 
-# 檢查 keyword格式
 
-
+# 檢查景點 keyword格式
 def is_valid_keyword(keyword):
     if keyword is None:
         return True

@@ -1,4 +1,3 @@
-
 from .database import execute_query
 from math import ceil
 import json
@@ -6,6 +5,7 @@ import json
 
 # #檢查景點id是否存在
 def check_attraction_id(attractionID):
+    print("查詢景點id是否存在")
     query = "SELECT * FROM attraction WHERE id = %s"
     values = (attractionID,)
     return execute_query(query, values)
@@ -99,12 +99,10 @@ def get_attraction_data_by_id(attractionID):
         # 因為圖片列表是字串格式，回傳前要先處理
         img_list = results["images"].split(",")
         results["images"] = img_list
-        print(results)
         return results
 
+
 # 獲取捷運站名資料，並按照周邊景點數量排列
-
-
 def get_mrt_name():
     sql = """
     SELECT mrt.name FROM mrt

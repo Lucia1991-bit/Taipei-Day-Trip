@@ -10,6 +10,9 @@ python = "^3.12"
 fastapi = "^0.111.0"
 uvicorn = "^0.29.0"
 mysql-connector-python = "^8.4.0"
+python-multipart = "^0.0.9"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
 [build-system]

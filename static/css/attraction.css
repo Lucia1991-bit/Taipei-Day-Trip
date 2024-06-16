@@ -9,7 +9,6 @@ body {
   overflow-x: hidden;
 }
 
-
 /* Main Section */
 main {
   flex: 1;
@@ -150,6 +149,20 @@ main {
 }
 
 
+.slide_button,
+.slide_pageIndicator_container {
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+
+.slide_button.hide,
+.slide_pageIndicator_container.hide {
+  opacity: 0;
+  transform: translate(-50%, 20px);
+}
+
+
+
 /* Schedule Section */
 .schedule_container {
   width: 100%;
@@ -210,7 +223,7 @@ main {
 }
 
 /* Date Selector */
-.schedule_form_date input[type="date"]::-webkit-calendar-picker-indicator {
+.schedule_form_date input::-webkit-calendar-picker-indicator {
     background: transparent;
     color: transparent;
     cursor: pointer;
@@ -239,7 +252,7 @@ main {
 }
 
 /* Time Selector */
-.schedule_form_time input[type="radio"] {
+.schedule_form_time input {
   appearance: none;
   -webkit-appearance: none;
   width: 22px;
@@ -249,13 +262,14 @@ main {
   outline: none;
   background-color: var(--light);
   position: relative;
+  cursor: pointer;
 }
 
-.schedule_form_time input[type="radio"]:checked {
+.schedule_form_time input:checked {
   position: relative; 
 }
 
-.schedule_form_time input[type="radio"]:checked::before {
+.schedule_form_time input:checked::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -295,6 +309,10 @@ main {
   cursor: pointer;
 }
 
+.schedule_form_button:active {
+  transform: scale(0.98);
+}
+
 /* Divide Line */
 .horizontal-line {
   width: 100%;
@@ -306,7 +324,7 @@ main {
 .attraction_info_container {
   width: 100%;
   margin: 40px auto;
-  margin-bottom: ;
+  margin-bottom: 0;
   padding: 15px 15px 80px 15px;
   display: flex;
   flex-direction: column;
@@ -341,24 +359,19 @@ main {
   animation: bgPos 1.2s linear infinite;
 }
 
-/* .skeleton, 
-.loading,
-.attraction_info_container.skeleton {
-  display: none;
-} */
 
 .schedule_container.skeleton {
   display: block;
 }
 
 .schedule_title.loading {
-  width: 30%;
+  width: 40%;
   height: 35px;
   margin-bottom: 30px;
 }
 
 .schedule_profile.loading {
-  width: 50%;
+  width: 30%;
   height: 20px;
   margin-bottom: 40px;
 }
@@ -392,27 +405,12 @@ main {
 }
 
 
-/* Footer */
-.footer {
-  margin-top: 0;
-  width: 100%;
-  height:104px;
-  background-color: var(--gray50);
-  bottom: 0;
-  position: relative;
-}
-
-.footer_text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-weight: 600;
-  color: var(--light);
-}
-
 /* RWD */
 @media (max-width: 1200px) {
+  .nav_title {
+    padding-left: 10px;
+  }
+
   .main_container {
     width: 100%;
   }

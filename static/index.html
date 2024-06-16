@@ -13,6 +13,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+  <!-- hero section的圖片預先加載 -->
+  <link rel="preload" href="/static/image/welcome.png" as="image">
+</head>
   <title>台北一日遊</title>
 </head>
 
@@ -28,11 +31,11 @@
       <form id="loginForm" class="form">
         <div class="form_control">
           <div class="validate_error show"><i class="fa-solid fa-circle-exclamation"></i> 信箱格式錯誤</div>
-          <input type="email" name="email" placeholder="輸入電子信箱" class="shake-effect">
+          <input id="login-email" type="email" name="email" placeholder="輸入電子信箱" class="shake-effect" required>
         </div>
         <div class="form_control">
           
-          <input type="password" name="password" placeholder="輸入密碼">
+          <input id="login-password" type="password" name="password" placeholder="輸入密碼" required>
         </div>
         <button type="submit" class="formButton button">
           登入帳戶
@@ -40,7 +43,7 @@
 
         <div class="form_linkContent">
             還沒有帳戶？
-            <span class="link" id="signUpLink">點此註冊</span>
+            <span class="link" id="signupLink">點此註冊</span>
         </div>
       </form>
     </div>
@@ -55,13 +58,13 @@
 
       <form id="signupForm" class="form">
         <div class="form_control">
-          <input type="text" name="name" placeholder="輸入姓名">
+          <input id="signup-name" type="text" name="name" placeholder="輸入姓名" required>
         </div>
         <div class="form_control">
-          <input type="email" name="email" placeholder="輸入電子信箱">
+          <input id="signup-email" type="email" name="email" placeholder="輸入電子信箱" required>
         </div>
         <div class="form_control">
-          <input type="password" name="password" placeholder="輸入密碼">
+          <input id="signup-password" type="password" name="password" placeholder="輸入密碼" required>
         </div>
         <button type="submit" class="formButton button">
           註冊新帳戶
@@ -95,9 +98,24 @@
           <span>登入/註冊</span>
         </li>
       </ul>
-    </div>
 
+      <!-- Hamberger icon for Mobile Device -->
+      <div class="hamburger-menu">
+        <div></div>
+      </div>
+    </div>
   </nav>
+
+  <!-- Navbar for Mobile Device-->
+  <ul class="mobile_nav_list">
+    <div></div>
+    <li class="nav_list_item" id="mobile_nav_bookingBtn">
+      <a href="/booking">預定行程</a>
+    </li>
+    <li class="nav_list_item" id="mobile_nav_loginBtn">
+      <span>登入/註冊</span>
+    </li>
+  </ul>
 
     <!-- Hero Section -->
   <header class="banner">
