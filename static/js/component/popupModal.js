@@ -1,4 +1,5 @@
 //點擊導覽列的登入/註冊按鈕，彈出頁面處理
+const container = document.querySelector(".popup_container");
 const loginPage = document.querySelector(".login");
 const signupPage = document.querySelector(".signup");
 const overlayEL = document.querySelector(".overlay");
@@ -33,6 +34,8 @@ function enableScroll() {
 
 //顯示彈出頁面，顯示遮罩，禁止滾動
 function showLoginModal() {
+  container.classList.add("active");
+  container.style.transition = "all 0.4s ease-in-out";
   loginPage.classList.add("active");
   overlayEL.style.display = "block";
   disableScroll();
@@ -40,6 +43,8 @@ function showLoginModal() {
 
 //隱藏彈出頁面，隱藏遮罩，恢復滾動
 function hideLoginModal() {
+  container.classList.remove("active");
+  container.style.transition = "none";
   loginPage.classList.remove("active");
   signupPage.classList.remove("active");
   overlayEL.style.display = "none";
@@ -48,8 +53,9 @@ function hideLoginModal() {
 
 // 轉換登入/註冊頁面
 function togglePages(showPage, hidePage) {
-  showPage.classList.add("active");
   hidePage.classList.remove("active");
+  hidePage.classList.add("hide");
+  showPage.classList.add("active");
 }
 
-export { showLoginModal, hideLoginModal, togglePages };
+export { showLoginModal, hideLoginModal, togglePages, disableScroll, enableScroll };

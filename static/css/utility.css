@@ -3,11 +3,14 @@
 :root {
   --light: #FFFFFF;
   --border: #CCCCCC;
+  --cyan80:#3e7b8a;
   --cyan70:#448899;
   --cyan50:#66AABB;
   --cyan20:#AADDEE;
   --gray70: #666666;
   --gray50: #757575;
+  --gray40: #bbbbbb;
+  --gray30: #cdcdcd;
   --gray20: #E8E8E8;
   --gray10: #F8F8F8;
 }
@@ -105,10 +108,11 @@
 
 .popup_container {
   position: fixed;
-  top: 80px;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  width:340px;
+  transform: translateX(-50%); 
+  width: 340px;
+  z-index: 50;
   border-radius: 6px;
   background-color: var(--light);
   box-shadow: 0 4px 60px #AAAAAA;
@@ -118,26 +122,30 @@
   text-align: center;
   z-index: 50;
   padding: 25px 15px 15px 15px;
-  transition: all 1s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.popup_container.login,
-.popup_container.signup {
+.popup_container.active {
+  pointer-events: auto;
+  transform: translate(-50%, 80px);
+  opacity: 1;
+}
+
+
+.login.hide {
   display: none;
 }
 
-.popup_container.login.active,
-.popup_container.signup.active {
-  display: flex;
+.signup {
+  display: none;
+  transition: display 0.3s ease-in-out;
 }
 
-/* .popup_container.login {
-  height: 275px;
-} */
-
-/* .popup_container.signup {
-  height: 332px;
-} */
+.login.active,
+.signup.active {
+  display: flex;
+} 
 
 .form_decoLine {
   position: absolute;
@@ -173,7 +181,40 @@
 .form_container {
   width: 100%;
   height: 100%;
+  position: relative;
 }
+
+
+.form_exit_button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 23px;
+  height: 23px;
+  background-color: var(--gray30);
+  color: var(--light);
+  z-index: 50;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.form_exit_button:active {
+  transform: scale(0.95);
+}
+.form_exit_button:hover {
+  background-color: var(--gray40);
+}
+
+.form_exit_button i.fa-x {
+  font-size: 13px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 55;
+}
+
 
 .form {
   width: 100%;
@@ -194,26 +235,38 @@
 /* 表格驗證錯誤 */
 
 /* 在 html插入錯誤訊息，並在目標input加.shake-effect class */
-.validate_error {
-  font-size: 13px;
-  color: #e34244;
+.form_message {
+  font-size: 14px;
   margin-bottom: 5px;
-  display: none;
   letter-spacing: 0.6px;
   position: relative;
   margin-left: 5px;
 }
 
-.validate_error i {
-  font-size: 12px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-440%, -50%);
+.form_message.fail {
+  color: #cb3739;
 }
 
-.validate_error.show {
+.form_message i {
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  transform: translateY(-50%);
+}
+
+/* 成功訊息 */
+.form_message.success {
+  color: #41B06E;
+}
+
+/* .validate_error.show {
   display: block;
+} */
+
+.shake-effect {
+  animation: shake 0.2s ease-in-out 0s 2;
+  /* box-shadow: 0 0 5px #e34244; */
 }
 
 @keyframes shake {
@@ -221,11 +274,6 @@
   25% { margin-left: 0.5rem; }
   75% { margin-left: -0.5rem; }
   100% { margin-left: 0rem; }
-}
-
-.shake-effect {
-  animation: shake 0.2s ease-in-out 0s 2;
-  box-shadow: 0 0 5px #e34244;
 }
 
 
@@ -245,6 +293,9 @@
 
 .formButton:active {
   transform: scale(98%);
+}
+.formButton:hover {
+  background-color: var(--cyan80);
 }
 
 .link {
@@ -288,7 +339,7 @@
 
 @media (max-width: 600px) {
   .nav {
-    z-index: 20;
+    z-index: 30;
     position: fixed;
   }
 
@@ -298,8 +349,8 @@
 
   /* Hamburger Icon */
   .hamburger-menu {
-    width: 30px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -310,11 +361,10 @@
 
   .hamburger-menu > div {
     position: relative;
-    width: 30px;
+    width: 100%;
     height: 2px;
     background-color: #555;
     display: flex;
-
     transition: all 0.4s ease;
   }
 
@@ -323,18 +373,18 @@
     content: "";
     position: absolute;
     background-color: #555;
-    width: 30px;
+    width: 100%;
     height: 2px;
     transition: all 0.3s ease;
     top: 0;
   }
 
   .hamburger-menu > div::before {
-    transform: translateY(-8px);
+    transform: translateY(-7px);
   }
 
   .hamburger-menu > div::after {
-    transform: translateY(8px);
+    transform: translateY(7px);
   }
 
   /* 被點擊時加入改變樣式 */
@@ -345,6 +395,17 @@
   .hamburger-menu.open > div::before,
   .hamburger-menu.open > div::after {
     transform: rotate(90deg);
+  }
+
+  .mobileOverlay {
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0; 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: none;
   }
 
   /* 手機版 nav list */
@@ -362,7 +423,7 @@
     align-items: center;
     border-bottom: 1px solid var(--gray20);
     box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
-    z-index: 5;
+    z-index: 15;
 
     /* 隱藏在上面 */
     transform: translateY(-100%);

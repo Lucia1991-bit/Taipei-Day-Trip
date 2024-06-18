@@ -1,8 +1,7 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.responses import JSONResponse
-from jose import jwt, JWTError
+from fastapi import Depends, HTTPException, Request
+from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import HTTPBearer
 from datetime import timedelta, datetime
 from dotenv import load_dotenv
 import os
@@ -21,9 +20,9 @@ ACCESS_TOKEN_EXPIRE_DAYS = 7
 # 處理加密/解密相關
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# 建立 OAuth2PasswordBearer 物件
-# 驗證請求 header 中的 token
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/auth")
+# 建立 JWTBearer 物件
+# 從請求 Header驗證 JWT token
+jwt_bearer = HTTPBearer()
 
 
 # 檢查信箱是否被註冊過
@@ -56,32 +55,44 @@ def verify_password(plain_password, hashed_password):
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     # 如果有提供時數，使用那個時數與現在時間計算出過期時數
-    # 如果沒有，使用預設時數與現在時間計算出過期時數
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
+    # 如果沒有，使用預設時數與現在時間計算出過期時數
     else:
         expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+
     # 將過期時數更新進用戶資訊中
-    # 將用戶資訊與密鑰、使用的加密演算法一起生成token
     to_encode.update({"exp": expire})
+
+    # 將用戶資訊與密鑰、使用的加密演算法一起生成token
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
 
 
 # 驗證 token，驗證成功後從資料庫取得 user資訊
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credential_exception = HTTPException(status_code=401, detail="無效的token", headers={
+# 格式為 "Authorization" : "Bearer token"
+async def verify_token(token: str = Depends(jwt_bearer)):
+    credential_exception = HTTPException(status_code=401, detail="無效的Token", headers={
         "WWW-Authenticate": "Bearer"})
     try:
-        # decode token
-        payload = jwt.decode(token, secret_key, algorithms=[algorithm])
-        email: str = payload.get("sub")
+        # decode token 後驗證 token
+        payload = jwt.decode(token.credentials, secret_key,
+                             algorithms=[algorithm])
 
+        email = payload.get("sub")
+
+        # 檢查payload裡的資訊
         if email is None:
             raise credential_exception
-        else:
-            user = get_user_by_email(email)
-            return user
 
+        # 從資料庫獲取使用者資訊
+        user = get_user_by_email(email)
+
+        if user is None:
+            raise credential_exception
+        return user
+
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token已經過期")
     except JWTError:
         raise credential_exception

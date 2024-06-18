@@ -1,8 +1,11 @@
 //fetchData Module
 import { fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
 //登入/註冊頁面相關 Module
+import { showLoginModal } from "./component/popupModal.js";
 import { initModal, initMobileMenu } from "./signup_login.js";
-//Skeleton loading相關Module
+//檢查使用者登入狀態及登出 Module
+import { checkUserStatus, logoutUser } from "./component/userStatus.js";
+//Skeleton loading相關 Module
 import { showSkeletonLoading, hideSkeletonLoading } from "./component/skeletonLoading.js"
 
 // const url = window.location.href;
@@ -356,15 +359,39 @@ async function init() {
     displayAttractions(results);
   }, 300)
 
-  //監聽登入/註冊視窗
-  initModal();
-  //監聽手機版導覽列
-  initMobileMenu();
-  
   //監聽搜尋表單提交
   submitSearchForm();
+
+  //檢查登入狀態，並改變登入/註冊按鈕文字
+  const navLoginBtn = document.getElementById("nav_loginBtn");
+  const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
+
+  const isLogin = await checkUserStatus();
+
+    //監聽登入/註冊視窗
+    initModal();
+    //監聽手機版導覽列
+    initMobileMenu();
+
+   if (isLogin) {
+    navLoginBtn.textContent = "登出系統";
+    mobileNavLoginBtn.textContent = "登出系統";
+
+    //移除原本的監聽器
+    navLoginBtn.removeEventListener("click", showLoginModal);
+    mobileNavLoginBtn.removeEventListener("click", showLoginModal);
+
+    //監聽登出按鈕
+    navLoginBtn.addEventListener("click", logoutUser);
+    mobileNavLoginBtn.addEventListener("click", logoutUser);
+
+   } 
 }
 
-init();
+window.addEventListener("load", init);
+
+
+
+
 
 

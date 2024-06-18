@@ -5,15 +5,15 @@ from typing import Optional, List
 
 # 註冊會員請求模型
 class SignUpRequest(BaseModel):
-    name: str = Field(..., min_length=3, max_length=50)
+    name: str = Field(...)
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str = Field(...)
 
 
 # 登入會員請求模型
-class SignInRequest(BaseModel):
+class LogInRequest(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str = Field(...)
 
 
 # token 回應模型

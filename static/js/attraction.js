@@ -1,7 +1,9 @@
 //fetchData Module
 import { fetchAttractionByID } from "./component/fetchData.js";
 //登入/註冊頁面相關 Module
-import { initModal, mobileMenu } from "./component/popupModal.js";
+import { initModal, initMobileMenu } from "./signup_login.js";
+//檢查使用者登入狀態及登出 Module
+import { checkUserStatus, logoutUser } from "./component/userStatus.js";
 
 console.log("attraction.js運行中");
 
@@ -193,8 +195,26 @@ function displayAttraction(results) {
 // 加載初始頁面
 async function init() {
 
-  //監聽登入/註冊視窗
-  initModal();
+  //檢查登入狀態，並改變登入/註冊按鈕文字
+  const navLoginBtn = document.getElementById("nav_loginBtn");
+  const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
+
+  const isLogin = await checkUserStatus();
+
+   if (isLogin) {
+    navLoginBtn.textContent = "登出系統";
+    mobileNavLoginBtn.textContent = "登出系統";
+
+    //監聽登出按鈕
+    navLoginBtn.addEventListener("click", logoutUser);
+    mobileNavLoginBtn.addEventListener("click", logoutUser);
+   } else {
+
+    //監聽登入/註冊視窗
+    initModal();
+    //監聽手機版導覽列
+    initMobileMenu();
+   }
 
   const results = await fetchAttractionByID();
   setTimeout(async() => {
@@ -202,7 +222,7 @@ async function init() {
   }, 300)
 }
 
-init();
+window.addEventListener("load", init);
 
 //=====監聽幻燈片事件
 //監聽按鍵盤左右鍵時觸發左右滑動
