@@ -1,6 +1,7 @@
 //fetchData Module
 import { fetchAttractionByID } from "./component/fetchData.js";
 //登入/註冊頁面相關 Module
+import { showLoginModal } from "./component/popupModal.js";
 import { initModal, initMobileMenu } from "./signup_login.js";
 //檢查使用者登入狀態及登出 Module
 import { checkUserStatus, logoutUser } from "./component/userStatus.js";
@@ -201,20 +202,24 @@ async function init() {
 
   const isLogin = await checkUserStatus();
 
-   if (isLogin) {
-    navLoginBtn.textContent = "登出系統";
-    mobileNavLoginBtn.textContent = "登出系統";
-
-    //監聽登出按鈕
-    navLoginBtn.addEventListener("click", logoutUser);
-    mobileNavLoginBtn.addEventListener("click", logoutUser);
-   } else {
-
     //監聽登入/註冊視窗
     initModal();
     //監聽手機版導覽列
     initMobileMenu();
-   }
+
+   if (isLogin) {
+    navLoginBtn.textContent = "登出系統";
+    mobileNavLoginBtn.textContent = "登出系統";
+
+    //移除原本的監聽器
+    navLoginBtn.removeEventListener("click", showLoginModal);
+    mobileNavLoginBtn.removeEventListener("click", showLoginModal);
+
+    //監聽登出按鈕
+    navLoginBtn.addEventListener("click", logoutUser);
+    mobileNavLoginBtn.addEventListener("click", logoutUser);
+
+   } 
 
   const results = await fetchAttractionByID();
   setTimeout(async() => {

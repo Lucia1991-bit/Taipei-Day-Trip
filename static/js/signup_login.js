@@ -98,12 +98,12 @@ async function submitLoginForm(e) {
 
   const result = await loginUser(requestData);
 
+  emailInput.value = "";
+  passwordInput.value = "";
+
   //註冊成功
   if (result) {
     const { token } = result;
-
-    emailInput.value = "";
-    passwordInput.value = "";
     
     //將 token 存進 localStorage
     localStorage.setItem("token", token);
@@ -185,8 +185,8 @@ async function submitSignupForm(e) {
   //送註冊請求到後端
   console.log("送出註冊請求");
   const successStatus = await registerUser(requestData);
-  
-  
+
+
   //註冊成功，清空 input
   if (successStatus) {
     nameInput.value = "";
