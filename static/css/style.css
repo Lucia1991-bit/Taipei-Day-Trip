@@ -19,15 +19,26 @@ body {
 
 /* Hero Section */
 .banner {
-  background: url("../image/welcome.png") no-repeat center top/cover;
+  /* background: url("../image/welcome.png") no-repeat center top/cover; */
   width: 100vw;
   height: 320px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 54px
+  margin-top: 54px;
+  position: relative;
 }
 
+.banner img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: -1;
+}
 
 .banner .banner_container {
   width: 1200px;
