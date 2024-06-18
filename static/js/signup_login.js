@@ -225,11 +225,7 @@ function initModal() {
   const exitBtns = document.querySelectorAll(".form_exit_button");
 
   // 點擊導覽列的登入/註冊按鈕，彈出註冊/登入頁面
-  navLoginBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    //彈出頁面
-    showLoginModal();
-  })
+  navLoginBtn.addEventListener("click", showLoginModal);
 
   // 點擊 x按鈕或遮罩層時,關閉登入頁面和遮罩層
   exitBtns.forEach(exitBtn => {
@@ -282,10 +278,7 @@ function initMobileMenu() {
     }
   });
 
-  mobileNavLoginBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    showLoginModal();
-  })
+  mobileNavLoginBtn.addEventListener("click", showLoginModal);
   
 }
 
