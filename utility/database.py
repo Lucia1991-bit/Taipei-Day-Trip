@@ -1,7 +1,5 @@
 import mysql.connector
 from mysql.connector.pooling import MySQLConnectionPool
-from fastapi import Depends
-from typing import Annotated
 import json
 from dotenv import load_dotenv
 import os
@@ -23,10 +21,9 @@ pool = MySQLConnectionPool(
     ** database_config
 )
 
+
 # 連接資料庫
 # 用 contextmanager管理連接的獲取和釋放
-
-
 @contextmanager
 def get_db():
     # 初始化資料庫

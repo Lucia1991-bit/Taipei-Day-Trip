@@ -233,11 +233,12 @@ function initModal() {
       hideLoginModal(); 
     });
   })
-  // overlayEL.addEventListener("click", (e) => {
-  //   if (e.target === overlayEL) {
-  //     hideLoginModal();
-  //   }
-  // });
+  
+  overlayEL.addEventListener("click", (e) => {
+    if (e.target === overlayEL) {
+      hideLoginModal();
+    }
+  });
 
   //點擊註冊按鈕，從登入頁面轉換成註冊頁面
   signupLink.addEventListener("click", ()=> {
