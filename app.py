@@ -1,27 +1,19 @@
-import mysql.connector
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
-from typing import Annotated, Optional, Union
+from typing import Union
+from datetime import timedelta, datetime
 from data.data_query import get_mrt_name, get_attraction_data_by_id, get_attraction_data_by_page_and_keyword, check_attraction_id
 from auth.validation import is_valid_keyword
+from auth.auth import get_user_by_email, add_new_member, verify_password, create_access_token, verify_token
 from model.model import *
 from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI()
 
-# 配置 CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-
+# 渲染靜態檔
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 
@@ -48,18 +40,102 @@ async def thankyou(request: Request):
 
 # 自定義錯誤處理
 # 因為FastAPI在進入函數前會自動驗證參數，如果沒通過驗證就會拋出錯誤，導致catch不到驗證錯誤(無法使用自定義格式)
+# 直接將RequestValidationError錯誤處理套用自己的格式
 # 在JSONResponse時套用BaseModel時要先轉換成字典(.dict())，才能順利被轉換成json
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
-        status_code=400,
+        status_code=422,
         content=ErrorResponse(error=True, message="輸入格式無效，請按照指定格式輸入").dict()
     )
 
 
+# 自定義 HTTP Exception錯誤
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    # 所有其他的HTTP異常
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": True, "message": str(exc.detail)},
+    )
+
+
+# 註冊新會員
+@app.post("/api/user", tags=["User"])
+async def register_user(request: Request, register_input: SignUpRequest = Body(...)) -> Union[SuccessResponse, ErrorResponse]:
+    name = register_input.name
+    email = register_input.email
+    password = register_input.password
+
+    # 驗證 password 是否符合規範
+    # if not is_valid_password(password):
+    #     raise ValueError("無效的密碼格式")
+
+    # 從資料庫檢查信箱是否被註冊過
+    try:
+        if get_user_by_email(email):
+            return JSONResponse(content=ErrorResponse(error=True, message="這個電子信箱已被註冊").dict(), status_code=400)
+
+        # 若沒被註冊過，將註冊會員資料加入資料庫
+        add_new_member(name, email, password)
+
+        return SuccessResponse(ok=True)
+
+    except ValueError as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
+    except Exception as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
+
+
+# 會員登入
+@app.put("/api/user/auth", tags=["User"])
+async def login_for_access_token(request: Request, login_input: LogInRequest = Body(...)) -> Union[TokenResponse, ErrorResponse]:
+    email = login_input.email
+    password = login_input.password
+
+    try:
+        # 檢查資料庫是否有註冊該使用者
+        auth_user = get_user_by_email(email)
+
+        # 如果該信箱沒有註冊，回報錯誤
+        if not auth_user:
+            return JSONResponse(content=ErrorResponse(error=True, message="無效的電子信箱").dict(), status_code=400)
+
+        # 如果密碼驗證錯誤，回報錯誤
+        if not verify_password(password, auth_user["password"]):
+            return JSONResponse(content=ErrorResponse(error=True, message="密碼輸入錯誤").dict(), status_code=400)
+
+        # 驗證成功，生成 token，在 payload放進使用者信箱及id
+        access_token = create_access_token(
+            data={"sub": auth_user["email"], "user_id": auth_user["id"], "name": auth_user["name"]})
+
+        return TokenResponse(token=access_token)
+
+    except Exception as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
+
+
+# 檢查 JWT token，獲取當前登入的會員資訊
+@app.get("/api/user/auth", tags=["User"])
+async def get_user_data(user: dict = Depends(verify_token)) -> Union[UserDataResponse, ErrorResponse]:
+    try:
+        user = UserData(
+            id=user.get("id"),
+            name=user.get("name"),
+            email=user.get("email")
+        )
+
+        return UserDataResponse(data=user)
+
+    except HTTPException as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=e.detail).dict(), status_code=e.status_code)
+    except Exception as e:
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
+
+
 # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
 # 頁碼預設為 0
-@app.get("/api/attractions")
+@app.get("/api/attractions", tags=["Attraction"])
 async def get_attraction_by_page_and_keyword(request: Request, page: int = Query(0, description="分頁頁碼，從0開始", ge=0), keyword: str = Query(None, description="搜尋關鍵字")) -> Union[AttractionPageResponse, ErrorResponse]:
     try:
         # 驗證和過濾關鍵字參數(避免SQL injection並減少無效查詢)
@@ -90,6 +166,12 @@ async def get_attraction_by_page_and_keyword(request: Request, page: int = Query
             else:
                 attractions_of_page_size = attractions
 
+            # # 取得低解析度圖片
+            # for attraction in attractions_of_page_size:
+            #     low_res_image = get_first_low_res_image_by_attraction_id(
+            #         attraction["id"])
+            #     attraction["low_image"] = low_res_image
+
             return AttractionPageResponse(nextPage=next_page, data=attractions_of_page_size)
 
     except ValueError as e:
@@ -99,15 +181,12 @@ async def get_attraction_by_page_and_keyword(request: Request, page: int = Query
 
 
 # 依據景點id獲取景點資料
-@app.get("/api/attraction/{attractionID}")
+@app.get("/api/attraction/{attractionID}", tags=["Attraction"])
 async def get_attraction_by_id(request: Request, attractionID: int = Path(..., description='景點編號，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
     try:
         # 先查 id 是否存在
-        result = check_attraction_id(attractionID)
-        print("查詢景點id是否存在")
-
         # 如果 id不存在，回報錯誤
-        if result is None:
+        if not check_attraction_id(attractionID):
             return JSONResponse(content=ErrorResponse(error=True, message="查無指定的景點資料").dict(), status_code=400)
 
         else:
@@ -120,7 +199,7 @@ async def get_attraction_by_id(request: Request, attractionID: int = Path(..., d
 
 
 # 獲取捷運站名列表
-@ app.get("/api/mrts")
+@ app.get("/api/mrts", tags=["MRT Station"])
 async def get_mrt(request: Request) -> Union[MRTData, ErrorResponse]:
     try:
         mrt_data = get_mrt_name()

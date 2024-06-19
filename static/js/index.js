@@ -1,5 +1,12 @@
-import { currentURL, fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
-import { initModal } from "./component/popupModal.js";
+//fetchData Module
+import { fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
+//登入/註冊頁面相關 Module
+import { showLoginModal } from "./component/popupModal.js";
+import { initModal, initMobileMenu } from "./signup_login.js";
+//檢查使用者登入狀態及登出 Module
+import { checkUserStatus, logoutUser } from "./component/userStatus.js";
+//Skeleton loading相關 Module
+import { showSkeletonLoading, hideSkeletonLoading } from "./component/skeletonLoading.js"
 
 // const url = window.location.href;
 // console.log(url);
@@ -120,44 +127,64 @@ function initListBarScroll() {
   })
 }
 
-//顯示 skeleton loading動畫
-function showSkeletonLoading(keyword = "") {
-  const amount = currentKeyword? 4 : 8;
-
-  // 創建 skeleton loading item
-  for (let i = 0; i < amount; i++) {
-    const skeleton = document.createElement("div");
-    const img = document.createElement("div");
-    const info = document.createElement("div");
-    const text1 = document.createElement("p");
-    const text2 = document.createElement("p");
-    const skeletonText1 = document.createElement("span");
-    const skeletonText2 = document.createElement("span");
-
-    skeleton.classList.add("attraction_item", "skeleton");
-    img.classList.add("attraction_item_image", "loading_image");
-    info.classList.add("attraction_item_info");
-    skeletonText1.classList.add("loading", "mrt_name");
-    skeletonText2.classList.add("loading", "category");
-
-    text1.appendChild(skeletonText1);
-    text2.appendChild(skeletonText2);
-    info.appendChild(text1);
-    info.appendChild(text2);
-    skeleton.appendChild(img);
-    skeleton.appendChild(info);
-
-    container.appendChild(skeleton);
+//檢查圖片是否完成加載，若完成加載，替換掉低解析度圖片
+function checkImageLoaded(image, imgContainer) {
+  if (image.complete) {
+    imgContainer.classList.add("loaded");
+  } else {
+    image.addEventListener("load", () => {
+      imgContainer.classList.add("loaded");
+    })
   }
 }
 
-//隱藏 skeleton loading動畫 
-function hideSkeletonLoading() {
-  const skeletons = document.querySelectorAll(".skeleton");
+//創建景點元素
+function createAttractionItem(attraction) {
+  const attractionItem = document.createElement("div");
+  const imgContainer = document.createElement("div");
+  const attractionLink = document.createElement("a");
+  const image = document.createElement("img");
+  const itemTitle = document.createElement("div");
+  const title = document.createElement("p");
+  const itemInfo = document.createElement("div");
+  const mrt = document.createElement("p");
+  const category = document.createElement("p");
+  
+  attractionItem.classList.add("attraction_item");
+  imgContainer.classList.add("attraction_item_image");
+  itemTitle.classList.add("attraction_item_title");
+  itemInfo.classList.add("attraction_item_info");
+  // mrt.classList.add("loading", "mrt_name");
+  // category.classList.add("loading", "category");
 
-  skeletons.forEach(skeleton => {
-    skeleton.classList.add("hide-skeleton");
-  });
+  //獲取低解析度圖片路徑(在與景點同名資料夾)
+  const name = attraction["name"].replace(/ /g, "_");
+  const lowerResImageUrl = `/static/image/low_res_images/${name}/1.jpg`;    
+  imgContainer.style.backgroundImage = `url("${lowerResImageUrl}")`;
+
+  //真正圖片
+  image.src = attraction["images"][0];
+  //啟用圖片 lazing loading
+  image.loading = "lazy";
+
+  //監聽圖片是否完成加載，若完成加載，替換掉低解析圖片
+  checkImageLoaded(image,imgContainer);
+
+
+  attractionLink.href = `/attraction/${attraction["id"]}`;
+  title.textContent = attraction["name"];
+  mrt.textContent = attraction["mrt"];
+  category.textContent = attraction["category"];
+  attractionLink.appendChild(image);
+  itemTitle.appendChild(title);
+  imgContainer.appendChild(attractionLink);
+  imgContainer.appendChild(itemTitle);
+  itemInfo.appendChild(mrt);
+  itemInfo.appendChild(category);
+  attractionItem.appendChild(imgContainer);
+  attractionItem.appendChild(itemInfo);
+
+  return attractionItem;
 }
 
 //顯示景點
@@ -180,43 +207,7 @@ async function displayAttractions(results) {
   hideSkeletonLoading();
 
   data.forEach( attraction => {
-    const attractionItem = document.createElement("div");
-    const imgContainer = document.createElement("div");
-    const attractionLink = document.createElement("a");
-    const image = document.createElement("img");
-    const itemTitle = document.createElement("div");
-    const title = document.createElement("p");
-    const itemInfo = document.createElement("div");
-    const mrt = document.createElement("p");
-    const category = document.createElement("p");
-    
-    attractionItem.classList.add("attraction_item");
-    imgContainer.classList.add("attraction_item_image", "loading_image");
-    itemTitle.classList.add("attraction_item_title");
-    itemInfo.classList.add("attraction_item_info");
-    // mrt.classList.add("loading", "mrt_name");
-    // category.classList.add("loading", "category");
-
-    image.src = attraction["images"][0];
-    // attractionLink.href = `attraction.html?id=${attraction["id"]}`;
-    attractionLink.href = `/attraction/${attraction["id"]}`;
-
-    title.textContent = attraction["name"];
-    mrt.textContent = attraction["mrt"];
-    category.textContent = attraction["category"];
-
-    attractionLink.appendChild(image);
-    itemTitle.appendChild(title);
-
-    imgContainer.appendChild(attractionLink);
-    imgContainer.appendChild(itemTitle);
-
-    itemInfo.appendChild(mrt);
-    itemInfo.appendChild(category);
-
-    attractionItem.appendChild(imgContainer);
-    attractionItem.appendChild(itemInfo);
-
+    const  attractionItem = createAttractionItem(attraction);
     container.appendChild(attractionItem);
   })
 
@@ -247,9 +238,9 @@ const lastAttractionItem = container.lastElementChild;
 
 //加載新頁面前顯示loader以及 skeleton動畫
 //防止重複加載，執行加載下一頁時先檢查是否正在loading
-async function getNextPage() {
-  let isLoading = false;
+let isLoading = false;
 
+async function getNextPage() {
   if (isLoading) return;
   isLoading = true;
 
@@ -368,13 +359,39 @@ async function init() {
     displayAttractions(results);
   }, 300)
 
-  //監聽登入/註冊視窗
-  initModal();
-  
   //監聽搜尋表單提交
   submitSearchForm();
+
+  //檢查登入狀態，並改變登入/註冊按鈕文字
+  const navLoginBtn = document.getElementById("nav_loginBtn");
+  const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
+
+  const isLogin = await checkUserStatus();
+
+    //監聽登入/註冊視窗
+    initModal();
+    //監聽手機版導覽列
+    initMobileMenu();
+
+   if (isLogin) {
+    navLoginBtn.textContent = "登出系統";
+    mobileNavLoginBtn.textContent = "登出系統";
+
+    //移除原本的監聽器
+    navLoginBtn.removeEventListener("click", showLoginModal);
+    mobileNavLoginBtn.removeEventListener("click", showLoginModal);
+
+    //監聽登出按鈕
+    navLoginBtn.addEventListener("click", logoutUser);
+    mobileNavLoginBtn.addEventListener("click", logoutUser);
+
+   } 
 }
 
-init();
+window.addEventListener("load", init);
+
+
+
+
 
 

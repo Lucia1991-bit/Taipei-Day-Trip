@@ -51,6 +51,34 @@ async function fetchMrtData() {
   
 }
 
-export { currentURL, fetchAttractionData, fetchMrtData };
+
+//以景點id獲取景點資料
+async function fetchAttractionByID() {
+  const path = window.location.pathname;
+  const parts = path.split("/");
+  const attractionID = parts[parts.length - 1];
+
+  try {
+    const response = await fetch(`${currentURL}/api/attraction/${attractionID}`);
+    const results = await response.json();
+
+    if (!response.ok) {
+      //如果查詢的景點 id不存在，導向首頁
+      if (response.status === 400) {
+        window.location.href = "/";
+      }  
+      throw new Error(results.message);
+    }
+
+    return results;
+  } catch (error) {
+    console.log("Error:", error);
+    return null;
+  }
+}
+
+
+
+export {fetchAttractionData, fetchMrtData, fetchAttractionByID };
 
 

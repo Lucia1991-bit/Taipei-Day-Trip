@@ -20,13 +20,13 @@ pool = MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=20,
     connection_timeout=300,  # 單位為秒
-    # pool_reset_session=True,  # 自動設定重新連線
     ** database_config
 )
 
-
 # 連接資料庫
 # 用 contextmanager管理連接的獲取和釋放
+
+
 @contextmanager
 def get_db():
     # 初始化資料庫
@@ -34,10 +34,6 @@ def get_db():
     try:
         db = pool.get_connection()
         if db.is_connected():
-            # 執行效能測試
-            with db.cursor() as cursor:
-                cursor.execute("SELECT 1")
-                _ = cursor.fetchone()
             print("資料庫連接成功")
             yield db
     except Exception as e:
@@ -48,10 +44,10 @@ def get_db():
     finally:
         if db and db.is_connected():
             db.close()
-            print("連接已歸還到連接池")
+            print("資料庫操作結束，連接已歸還到連接池")
 
 
-# 進行查詢
+# 進行資料庫操作
 def execute_query(query, values=None, fetch_method="fetchone"):
     with get_db() as db:
         try:
@@ -65,12 +61,17 @@ def execute_query(query, values=None, fetch_method="fetchone"):
                 fetch_function = getattr(cursor, fetch_method)
                 result = fetch_function()
 
+                # 如果 SQL語句開頭不是 SELECT，執行新增/刪除指令
                 if not query.lstrip().upper().startswith("SELECT"):
                     db.commit()
-            return result
+                return result
 
         except mysql.connector.Error as e:
-            print(f"查詢資料時發生 SQL 錯誤: {e}")
+            # 如果操作失敗，回到操作前的狀態
+            db.rollback()
+            print(f"操作資料庫時發生 SQL 錯誤: {e}")
+
         except Exception as e:
-            print("查詢資料時發生其他錯誤")
-            raise e
+            # 如果操作失敗，回到操作前的狀態
+            db.rollback()
+            print("操作資料庫時發生其他錯誤")

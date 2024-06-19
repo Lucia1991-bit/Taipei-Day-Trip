@@ -17,60 +17,70 @@
 </head>
 <body>
   <!-- Pop up Sign Up/ Login Section -->
-  <!-- Login -->
-  <section class="popup_container login" id="login">
-    <div class="form_decoLine"></div>
+  <div class="popup_container"> 
+    <!-- Login -->
+     <!-- 加 x -->
+    <section class="login" id="login">
+      <div class="form_decoLine"></div>
 
-    <div class="form_container">
-      <h3 class="form_title">登入會員帳號</h3>
+      <div class="form_container">
+        <div class="form_exit_button"><i class="fa-solid fa-x"></i></div>
+        <h3 class="form_title">登入會員帳號</h3>
 
-      <form id="loginForm" class="form">
-        <div class="form_control">
-          <input type="email" name="email" placeholder="輸入電子信箱">
-        </div>
-        <div class="form_control">
-          <input type="password" name="password" placeholder="輸入密碼">
-        </div>
-        <button type="submit" class="formButton button">
-          登入帳戶
-        </button>
+        <form id="loginForm" class="form">
+          <div class="form_control">
+            <!-- <div class="validate_error"><i class="fa-solid fa-circle-exclamation"></i></div> -->
+            <input id="login-email" type="email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form_control">
 
-        <div class="form_linkContent">
-            還沒有帳戶？
-            <span class="link" id="signUpLink">點此註冊</span>
-        </div>
-      </form>
-    </div>
-  </section>
+            <input id="login-password" type="password" name="password" placeholder="輸入密碼" required>
+          </div>
+          <button type="submit" class="formButton button">
+            登入帳戶
+          </button>
 
-  <!-- Signup -->
-  <section class="popup_container signup" id="signup">
-    <div class="form_decoLine"></div>
+          <div class="form_linkContent" id="loginLinkContent">
+              還沒有帳戶？
+              <span class="link" id="signupLink">點此註冊</span>
+          </div>
+        </form>
+      </div>
+    </section>
 
-    <div class="form_container">
-      <h3 class="form_title">註冊會員帳號</h3>
+    <!-- Signup -->
+    <section class="signup" id="signup">
+      <div class="form_decoLine"></div>
 
-      <form id="signupForm" class="form">
-        <div class="form_control">
-          <input type="text" name="name" placeholder="輸入姓名">
-        </div>
-        <div class="form_control">
-          <input type="email" name="email" placeholder="輸入電子信箱">
-        </div>
-        <div class="form_control">
-          <input type="password" name="password" placeholder="輸入密碼">
-        </div>
-        <button type="submit" class="formButton button">
-          註冊新帳戶
-        </button>
+      <div class="form_container">
+        <div class="form_exit_button"><i class="fa-solid fa-x"></i></div>
+        <h3 class="form_title">註冊會員帳號</h3>
 
-        <div class="form_linkContent">
-            已經有帳戶了？
-            <span class="link" id="loginLink">點此登入</span>
-        </div>
-      </form>
-    </div>
-  </section>
+        <form id="signupForm" class="form">
+          <div class="form_control">
+            <input id="signup-name" type="text" name="name" placeholder="輸入姓名" required>
+          </div>
+          <div class="form_control">
+            <input id="signup-email" type="email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form_control">
+            <input id="signup-password" type="password" name="password" placeholder="輸入密碼" required>
+          </div>
+          <button type="submit" class="formButton button">
+            註冊新帳戶
+          </button>
+          <!-- <div class="form_message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p>信箱輸入錯誤</p>
+          </div> -->
+          <div class="form_linkContent" id="signupLinkContent">
+              已經有帳戶了？
+              <span class="link" id="loginLink">點此登入</span>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
 
   <!-- Navigation Section-->
   <nav class="nav">
@@ -89,8 +99,27 @@
           <span>登入/註冊</span>
         </li>
       </ul>
+
+      <!-- Hamberger icon for Mobile Device -->
+      <div class="hamburger-menu">
+        <div></div>
+      </div>
     </div>
   </nav>
+
+  <!-- Navbar for Mobile Device-->
+  <ul class="mobile_nav_list">
+    <div></div>
+    <li class="nav_list_item" id="mobile_nav_bookingBtn">
+      <a href="/booking">預定行程</a>
+    </li>
+    <li class="nav_list_item" id="mobile_nav_loginBtn">
+      <span>登入/註冊</span>
+    </li>
+  </ul>
+
+
+
    <!-- Main Section -->
   <main>
     <div class="main_container hide">
@@ -203,6 +232,7 @@
 
   <!-- 遮罩，最後一個讀取的元素會覆蓋在最上面 -->
    <div class="overlay"></div> 
+   <div class="mobileOverlay"></div>
 
 <script type="module" src="/static/js/attraction.js"></script>  
 </body>

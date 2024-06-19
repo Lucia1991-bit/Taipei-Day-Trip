@@ -1,5 +1,6 @@
 //顯示 skeleton loading動畫
-function showSkeletonLoading() {
+function showSkeletonLoading(currentKeyword = "") {
+  const container = document.querySelector(".attractions_container");
   const amount = currentKeyword? 4 : 8;
 
   // 創建 skeleton loading item
