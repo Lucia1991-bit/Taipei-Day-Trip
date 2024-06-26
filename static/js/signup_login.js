@@ -1,6 +1,5 @@
 import { showLoginModal, hideLoginModal, togglePages } from "./component/popupModal.js";
 
-
 //顯示成功/錯誤訊息
 function showMessage(field, message, type = "success") {
   const page = document.getElementById(`${field}`);

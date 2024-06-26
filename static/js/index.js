@@ -370,7 +370,7 @@ async function init() {
   submitSearchForm();
 }
 
-window.addEventListener("load", init);
+document.addEventListener("DOMContentLoaded", init);
 
 
 

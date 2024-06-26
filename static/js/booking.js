@@ -197,6 +197,8 @@ async function displayBooking(results, userData) {
   const textEL = document.querySelector(".heading p");
   const container = document.querySelector(".booking_content");
   const divideLine = document.querySelector(".horizontal-line"); 
+  console.log(container);
+  console.log(divideLine);
 
   const { name, email } = userData;
 
@@ -212,7 +214,6 @@ async function displayBooking(results, userData) {
   if (!data) {
     textEL.style.display = "block";
     return
-
   } 
 
   //改變頁面顯示屬性(主要是配合 footer的 css屬性)
@@ -221,16 +222,46 @@ async function displayBooking(results, userData) {
   showUserInfo(name, email);
   //預定行程總價格清零
   totalPrice = 0;
+
+  //紀錄預定行程的日期
+  let currentDate = null;
+  let currentGroup = null;
   
-  data.forEach( booking => {
+  data.forEach( (booking, index) => {
+
+    //把同日期的預定行程分配在一組
+    if (booking.date !== currentDate) {
+      //循環到新日期，如果有上一組存在，把上一組行程加進 DOM
+      if (currentGroup) {
+        container.insertBefore(currentGroup, divideLine);
+      }
+
+      //創建分組的容器
+      currentGroup = document.createElement("div");
+      currentGroup.className = "booking_group";
+      currentDate = booking.date;
+    }
+
     const bookingItem = createBookingItem(booking);
-    container.insertBefore(bookingItem, divideLine);
-    
+    currentGroup.appendChild(bookingItem);
+    console.log(currentGroup);
+
+    //如果不是每組的最後一個項目，加分隔線
+    if (index < data.length - 1 && data[index + 1].date === currentDate ) {
+      const line = document.createElement("div");
+      line.className = "horizontal-line";
+      currentGroup.appendChild(line);
+    }
+
     //計算價格
-    const { price } = booking;
-    totalPrice += price;
+    totalPrice += booking.price;
 
   })
+
+  //迴圈結束，把最後一個分組加進 DOM
+  if (currentGroup) {
+    container.insertBefore(currentGroup, divideLine);
+  }
     
   //更新總價格
   updateTotalPrice(); 
