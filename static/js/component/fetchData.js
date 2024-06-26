@@ -51,7 +51,6 @@ async function fetchMrtData() {
   
 }
 
-
 //以景點id獲取景點資料
 async function fetchAttractionByID() {
   const path = window.location.pathname;
@@ -78,7 +77,35 @@ async function fetchAttractionByID() {
 }
 
 
+//獲取預定資料
+async function fetchBooking() {
+  //從 localStorage獲取 token
+  const token = localStorage.getItem("token");
 
-export {fetchAttractionData, fetchMrtData, fetchAttractionByID };
+  try {
+    const response = await fetch("/api/booking", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+
+    const results = await response.json();
+
+    if (!response.ok) {
+      throw new Error(results.message);
+    }
+
+    return results;
+
+  } catch (error) {
+    console.log("Error:", error);
+    return null;
+  }
+
+}
+
+
+export {fetchAttractionData, fetchMrtData, fetchAttractionByID, fetchBooking };
 
 

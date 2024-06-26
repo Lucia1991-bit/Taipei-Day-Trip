@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
+from typing import Optional
 
 
 # 註冊會員請求模型
@@ -28,4 +29,4 @@ class UserData(BaseModel):
 
 # 使用者資訊回應模型
 class UserDataResponse(BaseModel):
-    data: UserData
+    data: Optional[UserData] = None

@@ -93,7 +93,7 @@
       <ul class="nav_list">
         <!-- 按鈕 -->
         <li class="nav_list_item" id="nav_bookingBtn">
-          <a href="booking.html">預定行程</a>
+          <span>預定行程</span>
         </li>
         <li class="nav_list_item" id="nav_loginBtn">
           <span>登入/註冊</span>
@@ -111,14 +111,12 @@
   <ul class="mobile_nav_list">
     <div></div>
     <li class="nav_list_item" id="mobile_nav_bookingBtn">
-      <a href="/booking">預定行程</a>
+      <span>預定行程</span>
     </li>
     <li class="nav_list_item" id="mobile_nav_loginBtn">
       <span>登入/註冊</span>
     </li>
   </ul>
-
-
 
    <!-- Main Section -->
   <main>
@@ -155,16 +153,16 @@
             
               <div class="schedule_form_date">
                 <label class="schedule_form_label" for="date">選擇日期：</label>
-                <input class="schedule_form_date" type="date" name="date" id="date">
+                <input class="schedule_form_date" type="date" name="date" id="date" required>
                 <img src="/static/image/attraction-icon/icon_calendar.png" alt="date_icon" class="date_icon">
               </div>
 
               <div class="schedule_form_time">
                 <span class="schedule_form_label">選擇時間：</span>
                 
-                <input type="radio" id="morning" name="time" value="morning" checked />
+                <input type="radio" id="morning" name="time" value="上半天" checked />
                 <label for="morning" class="morning">上半天</label>
-                <input type="radio" id="afternoon" name="time" value="afternoon" />
+                <input type="radio" id="afternoon" name="time" value="下半天" />
                 <label for="afternoon" class="afternoon">下半天</label>
 
               </div>
@@ -173,10 +171,16 @@
                 <span class="schedule_form_price">新台幣 2000元</span>
               </div>
               
+              <div class="schedule_form_button_container">
+                <button type="submit" class="schedule_form_button">
+                    開始預約行程
+                </button>
 
-              <button type="submit" class="schedule_form_button">
-                  開始預約行程
-              </button>
+                <div class="schedule_message">
+                  <i></i>
+                  <p>&nbsp;</p>
+                </div>
+              </div>
             </form>
           </div>
         </section>
@@ -187,16 +191,16 @@
 
       <!-- 景點介紹 -->
       <section class="attraction_info_container">
-        <p class="attraction_info_text description">平安鐘祈求大家的平安，這是為了紀念921地震週年的設計，在喧鬧的廣場上每個小時鳴鐘，保佑平安，祈禱臺灣不會再發生這樣的天災。雙手合十加上108個黃色的琉璃乳丁，隨著緩緩流下的水，在底下的一個小噴泉噴出。雙手合十的意義，一個是祈福，一個是包容，教我們要包容這樣的改變，撫平這樣的傷口。下面的水緩緩流出，代表著人的生命力是不斷地延續下去。緩緩地鐘聲，卻帶來心中的寧靜。 這個平安鐘是由建築師姚仁喜與琉璃創作家王俠軍共同設計，長6公尺、寬5公尺，以鑄銅製成，由法鼓山文教基金會全額出資。平安鐘點綴都市景觀，不時提醒大家，面對刻骨銘心的災難痛苦，更應該有謙卑的一顆心。</p>
+        <p class="attraction_info_text description">&nbsp;</p>
         
         <span class="attraction_info_text bold">
           景點地點：
-        <p class="attraction_info_text address">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Praesentium unde minus laudantium reiciendis facere, eius quibusdam rerum, labore aliquam commodi delectus quia quaerat ipsam? Velit sint amet voluptatem ipsum sequi. Delectus similique ad itaque consectetur est nobis cum quasi obcaecati.</p>
+        <p class="attraction_info_text address">&nbsp;</p>
         </span>
 
         <span class="attraction_info_text bold">
           交通方式：
-        <p class="attraction_info_text transport">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, ad quae ex porro eos rerum? Ipsum ex ea aliquid excepturi veniam quibusdam voluptas. Omnis repellat, nobis vitae sit eveniet saepe.</p>
+        <p class="attraction_info_text transport">&nbsp;</p>
         </span>
       
       </section>
@@ -234,6 +238,7 @@
    <div class="overlay"></div> 
    <div class="mobileOverlay"></div>
 
-<script type="module" src="/static/js/attraction.js"></script>  
+  <script type="module" src="/static/js/attraction.js"></script>
+  <script type="module" src="/static/js/signup_login.js"></script>  
 </body>
 </html>

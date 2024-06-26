@@ -19,26 +19,10 @@ class AttractionModel:
 
     # 獲取不同分頁的景點資料，並可根據關鍵字、或捷運名稱篩選
     # === JOIN捷運站列表必須用 LEFT JOIN，不然捷運站為null的景點會被忽略
-
+    # 創建一個 view 先把需要的 attraction 資料合併起來
 
     def get_attraction_data_by_page_and_keyword(page: int, keyword: str, page_size: int):
-        sql_base = """
-      SELECT
-        a.id,
-        a.name,
-        c.name AS category,
-        a.description,
-        a.address,
-        a.transport,
-        m.name AS mrt,
-        a.lat,
-        a.lng,
-        GROUP_CONCAT(i.url ORDER BY i.id) AS images
-      FROM attraction a
-      JOIN category c ON c.id = a.category_id
-      LEFT JOIN mrt m ON m.id = a.mrt_id  
-      JOIN image i ON i.attraction_id = a.id
-      """
+        sql_base = "SELECT * FROM taipei_day_trip.attraction_view"
         # 如果未提供關鍵字，獲取所有景點資料
         # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
         # offset還是12
@@ -47,9 +31,9 @@ class AttractionModel:
             values = (page_size + 1, page * page_size)
         # 如果提供關鍵字，加上條件
         else:
-            condition = "WHERE( m.name = %s OR a.name LIKE %s )"
+            condition = "WHERE( mrt = %s OR name LIKE %s )"
             values = (keyword, f"%{keyword}%", page_size + 1, page * page_size)
-        group_by = "GROUP BY a.id"
+        group_by = "GROUP BY id"
         limit_offset = "LIMIT %s OFFSET %s"
         query = f"{sql_base} {condition} {group_by} {limit_offset}"
         results = execute_query(query, values, fetch_method="fetchall")
@@ -79,22 +63,8 @@ class AttractionModel:
     def get_attraction_data_by_id(attractionID):
         # SQL的 group_concat參數長度預設值很小(1024)，圖片網址很長，因此必須重新設定他的 max_len
         sql = """
-        SELECT
-        a.id,
-        a.name,
-        c.name AS category,
-        a.description,
-        a.address,
-        a.transport,
-        mrt.name AS mrt,
-        a.lat,
-        a.lng,
-        GROUP_CONCAT(i.url ORDER BY i.id) AS images
-        FROM attraction a
-        LEFT JOIN mrt ON mrt.id = a.mrt_id
-        JOIN category c ON c.id = a.category_id
-        JOIN image i ON i.attraction_id = a.id
-        WHERE a.id = %s;
+        SELECT * FROM taipei_day_trip.attraction_view
+        WHERE id = %s;
       """
         values = (attractionID,)
         results = execute_query(sql, values, fetch_method="fetchone")

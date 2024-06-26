@@ -2,7 +2,8 @@ from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from typing import Union
-from routes import attraction, mrt, user
+from routes import attraction, mrt, user, booking
+from schema.error_success import *
 from fastapi.staticfiles import StaticFiles
 
 
@@ -12,6 +13,7 @@ app = FastAPI()
 app.include_router(attraction.router, tags=["Attraction"])
 app.include_router(mrt.router, tags=["MRT Station"])
 app.include_router(user.router, tags=["User"])
+app.include_router(booking.router, tags=["Booking"])
 
 
 # 渲染靜態檔
@@ -47,13 +49,24 @@ async def thankyou(request: Request):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
-        content=ErrorResponse(error=True, message="輸入格式無效，請按照指定格式輸入").dict()
+        content=ErrorResponse(
+            error=True, message="輸入格式無效，請按照指定格式輸入", detail=exc.errors()).dict()
     )
 
 
 # 自定義 HTTP Exception錯誤
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
+    if exc.status_code == 401:
+        return JSONResponse(
+            status_code=401,
+            content={"error": True, "message": "請先登入系統，才能操作此項功能"}
+        )
+    elif exc.status_code == 403:
+        return JSONResponse(
+            status_code=403,
+            content={"error": True, "message": "您沒有權限操作此項功能"}
+        )
     # 所有其他的HTTP異常
     return JSONResponse(
         status_code=exc.status_code,

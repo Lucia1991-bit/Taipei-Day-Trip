@@ -12,17 +12,13 @@ async function checkUserStatus() {
     const response = await fetch("/api/user/auth", {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       }
     })
 
-    const result = await response.json();
+    const { data: userData } = await response.json();
 
-    if (!response.ok) {
-      throw new Error(response.message);
-    }
-    return result;
+    return userData
 
   } catch(error) {
     console.error("Error: ", error)
@@ -30,13 +26,6 @@ async function checkUserStatus() {
   }
 }
 
-//登出使用者
-function logoutUser() {
-  //清除token並更新界面
-  localStorage.removeItem("token");
+export { checkUserStatus }
 
-  //重新導向首頁
-  window.location.href = "/";
-}
 
-export { checkUserStatus, logoutUser }

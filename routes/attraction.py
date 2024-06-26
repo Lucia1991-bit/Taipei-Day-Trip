@@ -48,7 +48,7 @@ async def get_attraction_by_page_and_keyword(request: Request, page: int = Query
 
 
 @router.get("/api/attraction/{attraction_id}")
-async def get_attraction_by_id(request: Request, attraction_id: int = Path(..., description='景點編號，必須是大於0的整數', ge=1)) -> Union[AttractionResponse, ErrorResponse]:
+async def get_attraction_by_id(request: Request, attraction_id: int = Path(..., description="景點編號，必須是大於0的整數", ge=1)) -> Union[AttractionResponse, ErrorResponse]:
     try:
         # 檢查景點 id是否存在資料
         data = AttractionModel.check_attraction_id(attraction_id)

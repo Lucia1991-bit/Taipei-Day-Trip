@@ -1,10 +1,12 @@
 //fetchData Module
 import { fetchAttractionByID } from "./component/fetchData.js";
-//登入/註冊頁面相關 Module
+
+//顯示註冊/登入頁面 Module
 import { showLoginModal } from "./component/popupModal.js";
-import { initModal, initMobileMenu } from "./signup_login.js";
-//檢查使用者登入狀態及登出 Module
-import { checkUserStatus, logoutUser } from "./component/userStatus.js";
+
+//檢查登入狀態 Module
+import { checkUserStatus } from "./component/userStatus.js";
+
 
 console.log("attraction.js運行中");
 
@@ -193,38 +195,149 @@ function displayAttraction(results) {
 }
 
 
+//顯示成功/錯誤訊息 
+function showStatusMessage(message, type) {
+  const messageContainer = document.querySelector(".schedule_message");
+  const icon = messageContainer.querySelector("i");
+  const text = messageContainer.querySelector("p");
+
+  if (type === "success") {
+    icon.className = "fa-solid fa-check-circle";
+    messageContainer.className = "schedule_message success";
+  } else {
+    icon.className = "fa-solid fa-circle-exclamation";
+    messageContainer.className = "schedule_message fail";
+  }
+
+  text.textContent = message;
+
+}
+
+
+//創建新預定
+async function createBooking(requestData) {
+  //從 localStorage獲取 token
+  const token = localStorage.getItem("token");
+
+  try {
+    console.log("送出請求...");
+    const response = await fetch("/api/booking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(requestData)
+    })
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // 因預定時段衝突新增失敗，顯示錯誤訊息
+      if (response.status === 400) {
+        showStatusMessage(result.message, "fail");
+      }
+      throw new Error(response.message);
+    }
+
+    return result;
+
+  } catch(error) {
+    console.error("Error: ", error);
+  }
+}
+
+//檢查送出的請求跟上一次的請求有沒有重複
+function isSameRequest(req1, req2) {
+  return JSON.stringify(req1) === JSON.stringify(req2);
+}
+
+//暫存上一次的請求資訊
+let lastRequest = null;
+
+//送出預定行程表單
+async function submitBookingForm() {
+
+  //取得網址的景點id
+  const path = window.location.pathname;
+  const parts = path.split("/");
+  //從網址擷取下來的格式是字串，要轉成整數
+  const attractionId = parseInt(parts[parts.length - 1]);
+  
+  //獲取日期
+  const dateInput = document.getElementById("date");
+  //格式為"YYYY-MM-DD"的字串，pydantic能夠直接轉成 "YYYY-MM-DD"的 date格式
+  const date = dateInput.value;
+
+  //獲取被選取的時間
+  const timeInput = document.querySelector("input[name='time']:checked")
+  const time = timeInput.value;
+
+  //獲取價格
+  const price = time == "上半天" ? 2000 : 2500;
+
+  // 創建要求體
+  const requestData = {
+    attractionId,
+    date,
+    time,
+    price
+  }
+
+  //送出請求前，檢查送出的請求跟上一次的請求有沒有重複
+  if (lastRequest && isSameRequest(requestData, lastRequest)) {
+    showStatusMessage("新增失敗，已經存在相同的預訂", "fail");
+    console.log("重複的請求，不發送");
+    return; 
+  }
+
+  // 更新最後一次請求
+  //用...防止直接修改原始物件時影響 lastRequest
+  lastRequest = { ...requestData };
+
+  //送出請求前可以將loading顯示在按鈕
+  const successStatus = await createBooking(requestData);
+
+  if (successStatus) {
+    //顯示成功訊息
+    showStatusMessage("新增成功，請查看預定頁面", "success");
+    console.log("新增成功");
+
+    //跳轉至預定頁面
+    setTimeout(()=> {
+      location.href = "/booking";
+    }, 500)
+
+
+    //重新加載畫面
+  } else {
+    console.error("新增失敗");
+  }
+  
+}
+
+
 // 加載初始頁面
 async function init() {
-
-  //檢查登入狀態，並改變登入/註冊按鈕文字
-  const navLoginBtn = document.getElementById("nav_loginBtn");
-  const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
-
-  const isLogin = await checkUserStatus();
-
-    //監聽登入/註冊視窗
-    initModal();
-    //監聽手機版導覽列
-    initMobileMenu();
-
-   if (isLogin) {
-    navLoginBtn.textContent = "登出系統";
-    mobileNavLoginBtn.textContent = "登出系統";
-
-    //移除原本的監聽器
-    navLoginBtn.removeEventListener("click", showLoginModal);
-    mobileNavLoginBtn.removeEventListener("click", showLoginModal);
-
-    //監聽登出按鈕
-    navLoginBtn.addEventListener("click", logoutUser);
-    mobileNavLoginBtn.addEventListener("click", logoutUser);
-
-   } 
 
   const results = await fetchAttractionByID();
   setTimeout(async() => {
     displayAttraction(results);
   }, 300)
+
+  //監聽預約行程按鈕
+  //如果沒登入，顯示登入/註冊頁面。如果已登入，送出表單請求
+  const bookingForm = document.querySelector(".schedule_form");
+  const isLogin = await checkUserStatus();
+
+  bookingForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!isLogin) {
+      showLoginModal();
+    }
+    submitBookingForm();
+  })
+
 }
 
 window.addEventListener("load", init);
@@ -335,7 +448,7 @@ slideContainer.addEventListener('mouseleave', hideControls);
 function changePrice() {
   const timeInput = document.querySelector("input[name='time']:checked");
   const price = document.querySelector(".schedule_form_price");
-  if (timeInput.value === "afternoon") {
+  if (timeInput.value === "下半天") {
     price.textContent = "新台幣 2500元";
   } else {
     price.textContent = "新台幣 2000元";

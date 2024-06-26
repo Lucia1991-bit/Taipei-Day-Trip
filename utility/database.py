@@ -61,6 +61,8 @@ def execute_query(query, values=None, fetch_method="fetchone"):
                 # 如果 SQL語句開頭不是 SELECT，執行新增/刪除指令
                 if not query.lstrip().upper().startswith("SELECT"):
                     db.commit()
+                    print("新增/刪除資料成功")
+
                 return result
 
         except mysql.connector.Error as e:

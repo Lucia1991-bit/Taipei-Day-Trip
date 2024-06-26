@@ -29,6 +29,7 @@ class UserModel:
         return bcrypt_context.verify(plain_password, hashed_password)
 
     # 生成 JWT token
+
     def create_access_token(data: dict, expires_delta: timedelta = None):
         to_encode = data.copy()
         # 如果有提供時數，使用那個時數與現在時間計算出過期時數
@@ -42,5 +43,5 @@ class UserModel:
         to_encode.update({"exp": expire})
 
         # 將用戶資訊與密鑰、使用的加密演算法一起生成token
-        encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt

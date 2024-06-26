@@ -43,7 +43,10 @@
           <button type="submit" class="formButton button">
             登入帳戶
           </button>
-
+          <!-- <div class="form_message">
+            <i></i>
+            <p></p>
+          </div> -->
           <div class="form_linkContent" id="loginLinkContent">
               還沒有帳戶？
               <span class="link" id="signupLink">點此註冊</span>
@@ -74,8 +77,8 @@
             註冊新帳戶
           </button>
           <!-- <div class="form_message">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <p>信箱輸入錯誤</p>
+            <i></i>
+            <p></p>
           </div> -->
           <div class="form_linkContent" id="signupLinkContent">
               已經有帳戶了？
@@ -85,6 +88,8 @@
       </div>
     </section>
   </div>
+
+
 
   <!-- Navigation Section-->
   <nav class="nav">
@@ -100,10 +105,43 @@
       <ul class="nav_list">
         <!-- 按鈕 -->
         <li class="nav_list_item" id="nav_bookingBtn">
-          <a href="booking.html">預定行程</a>
+          <span class="nav_list_item--btn">預定行程
+            <!-- <div class="nav_booking_count">5</div> -->
+          </span>
+          <!-- Booking Modal -->
+          <div class="booking_modal">
+            <div class="booking_modal_container">
+
+              <div class="booking_modal_info_container">
+                <div class="booking_modal_image">
+                  <img src="../static/image/low_res_images/中正紀念堂/1.jpg" alt="">
+                </div>
+                <div class="booking_modal_text">
+                  <h3>景點名稱</h3>
+                  <p>日期</p>
+                  <p>價格</p>
+                </div>
+              </div>
+
+              <div class="booking_modal_info_container">
+                <div class="booking_modal_image">
+                  <img src="../static/image/low_res_images/中正紀念堂/1.jpg" alt="">
+                </div>
+                <div class="booking_modal_text">
+                  <h3>景點名稱</h3>
+                  <p>日期</p>
+                  <p>價格</p>
+                </div>
+              </div>
+
+              <div class="booking_modal_price_container">
+                <h3>Total: 新台幣 2000 元</h3>
+              </div>
+            </div> 
+          </div>
         </li>
         <li class="nav_list_item" id="nav_loginBtn">
-          <span>登入/註冊</span>
+          <span class="nav_list_item--btn">登入/註冊</span>
         </li>
       </ul>
 
@@ -118,7 +156,7 @@
   <ul class="mobile_nav_list">
     <div></div>
     <li class="nav_list_item" id="mobile_nav_bookingBtn">
-      <a href="/booking">預定行程</a>
+      <span>預定行程</span>
     </li>
     <li class="nav_list_item" id="mobile_nav_loginBtn">
       <span>登入/註冊</span>
@@ -215,6 +253,7 @@
    <div class="mobileOverlay"></div>
 
    <script type="module" src="/static/js/index.js"></script>
+   <script type="module" src="/static/js/signup_login.js"></script>
   
 </body>
 </html>
