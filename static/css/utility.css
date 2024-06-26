@@ -80,7 +80,7 @@ body {
   cursor: pointer;
 }
 
-.nav_list_item--btn:hover {
+.nav_list_item:hover {
   color: #000;
   font-weight: 700;
 }
@@ -405,6 +405,7 @@ body {
   position: relative;
   left: 0;
   right: 0;
+  flex-shrink: 0;
 }
 
 .footer.no-data {

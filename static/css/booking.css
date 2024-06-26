@@ -1,3 +1,7 @@
+/* body {
+  background-color: var(--gray10);
+} */
+
 main {
   flex: 1;
 }
@@ -52,6 +56,7 @@ main.no-data {
   margin-bottom: 40px;
   position: relative;
   cursor: pointer;
+  /* background-color: var(--light); */
 }
 
 .booking_info_icon {

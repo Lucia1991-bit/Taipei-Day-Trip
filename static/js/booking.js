@@ -1,8 +1,10 @@
 //fetchData Module
 import { fetchBooking } from "./component/fetchData.js";
 
-//檢查登入狀態 Module
+//使用者登入狀態相關 Module
 import { checkUserStatus } from "./component/userStatus.js";
+//NavBar以及註冊/登入相關 Module
+import { initNavBar } from "./signup_login.js";
 
 console.log("attraction.js運行中");
 
@@ -256,14 +258,19 @@ function hideSpinner() {
 
 //加載初始頁面
 async function init() {
-  //檢查有沒有登入，沒登入跳轉回首頁
-  const userData = await checkUserStatus();
-  if (!userData) {
+
+  //檢查使用者登入狀態，沒登入跳轉回首頁
+  const currentUser = await checkUserStatus();
+  //初始化 NavBar
+  initNavBar(currentUser);
+  
+  if (!currentUser) {
+    console.log(currentUser);
     location.href = "/";
   }
 
   //改變歡迎詞用戶名
-  updateUserName(userData);
+  updateUserName(currentUser);
 
   //加載頁面資料
   const results = await fetchBooking();
@@ -272,7 +279,7 @@ async function init() {
   showSpinner();
   
   setTimeout(async() => {
-    displayBooking(results, userData);
+    displayBooking(results, currentUser);
     hideSpinner();
   }, 300)
 

@@ -3,6 +3,11 @@ import { fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
 //Skeleton loading相關 Module
 import { showSkeletonLoading, hideSkeletonLoading } from "./component/skeletonLoading.js"
 
+//使用者登入狀態相關 Module
+import { checkUserStatus } from "./component/userStatus.js";
+//NavBar以及註冊/登入相關 Module
+import { initNavBar } from "./signup_login.js";
+
 // const url = window.location.href;
 // console.log(url);
 
@@ -356,6 +361,11 @@ async function init() {
     displayAttractions(results);
   }, 300)
 
+  //檢查使用者登入狀態
+  const currentUser = await checkUserStatus();
+  //初始化 NavBar
+  initNavBar(currentUser);
+  
   //監聽搜尋表單提交
   submitSearchForm();
 }

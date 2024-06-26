@@ -4,8 +4,11 @@ import { fetchAttractionByID } from "./component/fetchData.js";
 //顯示註冊/登入頁面 Module
 import { showLoginModal } from "./component/popupModal.js";
 
-//檢查登入狀態 Module
+//使用者登入狀態相關 Module
 import { checkUserStatus } from "./component/userStatus.js";
+
+//NavBar以及註冊/登入相關 Module
+import { initNavBar } from "./signup_login.js";
 
 
 console.log("attraction.js運行中");
@@ -237,7 +240,7 @@ async function createBooking(requestData) {
       if (response.status === 400) {
         showStatusMessage(result.message, "fail");
       }
-      throw new Error(response.message);
+      throw new Error(result.message);
     }
 
     return result;
@@ -254,6 +257,9 @@ function isSameRequest(req1, req2) {
 
 //暫存上一次的請求資訊
 let lastRequest = null;
+
+//使用者登入狀態
+let AuthUser = null;
 
 //送出預定行程表單
 async function submitBookingForm() {
@@ -325,14 +331,18 @@ async function init() {
     displayAttraction(results);
   }, 300)
 
+  
+  //檢查使用者登入狀態
+  const currentUser = await checkUserStatus();
+  //初始化 NavBar
+  initNavBar(currentUser);
+
   //監聽預約行程按鈕
   //如果沒登入，顯示登入/註冊頁面。如果已登入，送出表單請求
   const bookingForm = document.querySelector(".schedule_form");
-  const isLogin = await checkUserStatus();
-
   bookingForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!isLogin) {
+    if (!currentUser) {
       showLoginModal();
     }
     submitBookingForm();

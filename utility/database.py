@@ -9,9 +9,13 @@ from contextlib import contextmanager
 load_dotenv()
 
 # 資料庫連接設定
-# .env通常儲存key=value pair，如果想儲存整個字典需先轉換成字串
-database_config_str = os.getenv("DATABASE_CONFIG")
-database_config = json.loads(database_config_str)
+database_config = {
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "database": "taipei_day_trip",
+    "charset": "utf8mb4"
+}
 
 # 資料庫連接設定
 pool = MySQLConnectionPool(

@@ -1,5 +1,4 @@
 import { showLoginModal, hideLoginModal, togglePages } from "./component/popupModal.js";
-import { checkUserStatus } from "./component/userStatus.js"
 
 
 //顯示成功/錯誤訊息
@@ -325,12 +324,15 @@ function logoutUser() {
 
 
 //頁面初始
-async function init() {
+async function initNavBar(userStatus) {
   const navLoginBtn = document.getElementById("nav_loginBtn");
   const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
   const navBookingBtn = document.getElementById("nav_bookingBtn");
 
-  const isLogin = await checkUserStatus();
+    //初始化使用者登入狀態，並獲得使用者資料
+    // await initUserStatus();
+    // const userData = await getUserData();
+    // console.log("在外層檢查使用者：", userData);
 
     //監聽登入/註冊視窗
     initModal();
@@ -338,7 +340,7 @@ async function init() {
     initMobileMenu();
 
     //檢查登入狀態，並改變登入/註冊按鈕文字
-   if (isLogin) {
+   if (userStatus) {
     navLoginBtn.textContent = "登出系統";
     mobileNavLoginBtn.textContent = "登出系統";
 
@@ -355,7 +357,7 @@ async function init() {
    //檢查登入狀態，若沒登入，顯示登入/註冊頁面。若已登入，導入 booking頁面
    const bookingBtn = document.getElementById("nav_bookingBtn");
    bookingBtn.addEventListener("click", () => {
-      if (!isLogin) {
+      if (!userStatus) {
         showLoginModal();
       }
       else {
@@ -364,4 +366,4 @@ async function init() {
    });
 }
 
-window.addEventListener("load", init);
+export { initNavBar };

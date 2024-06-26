@@ -18,7 +18,7 @@ async function checkUserStatus() {
 
     const { data: userData } = await response.json();
 
-    return userData
+    return userData;
 
   } catch(error) {
     console.error("Error: ", error)
@@ -26,6 +26,6 @@ async function checkUserStatus() {
   }
 }
 
-export { checkUserStatus }
+export { checkUserStatus };
 
 
