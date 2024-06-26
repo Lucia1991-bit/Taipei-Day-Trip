@@ -239,6 +239,9 @@ async function displayBooking(results, userData) {
 
 //改變歡迎詞用戶名
 function updateUserName(userData) {
+  if (!userData) {
+    return
+  }
   const { name } = userData;
   const welcomeText = document.querySelector("h2.booking_info_title");
   welcomeText.textContent = `您好，${name}，待預定的行程如下：`;
@@ -261,13 +264,14 @@ async function init() {
 
   //檢查使用者登入狀態，沒登入跳轉回首頁
   const currentUser = await checkUserStatus();
+
+  if (!currentUser) {
+    location.href = "/";
+    return;
+  }
+
   //初始化 NavBar
   initNavBar(currentUser);
-  
-  if (!currentUser) {
-    console.log(currentUser);
-    location.href = "/";
-  }
 
   //改變歡迎詞用戶名
   updateUserName(currentUser);
