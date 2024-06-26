@@ -328,6 +328,7 @@ function logoutUser() {
 async function init() {
   const navLoginBtn = document.getElementById("nav_loginBtn");
   const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
+  const navBookingBtn = document.getElementById("nav_bookingBtn");
 
   const isLogin = await checkUserStatus();
 
@@ -351,7 +352,6 @@ async function init() {
 
    } 
 
-   //監聽預定行程按鈕
    //檢查登入狀態，若沒登入，顯示登入/註冊頁面。若已登入，導入 booking頁面
    const bookingBtn = document.getElementById("nav_bookingBtn");
    bookingBtn.addEventListener("click", () => {
