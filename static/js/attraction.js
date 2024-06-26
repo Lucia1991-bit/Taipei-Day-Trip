@@ -350,7 +350,7 @@ async function init() {
 
 }
 
-window.addEventListener("load", init);
+document.addEventListener("DOMContentLoaded", init);
 
 //=====監聽幻燈片事件
 //監聽按鍵盤左右鍵時觸發左右滑動
