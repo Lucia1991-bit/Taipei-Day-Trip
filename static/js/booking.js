@@ -273,14 +273,14 @@ async function init() {
   //初始化 NavBar
   initNavBar(currentUser);
 
+  //顯示加載轉圈動畫
+  showSpinner();
+
   //改變歡迎詞用戶名
   updateUserName(currentUser);
 
   //加載頁面資料
   const results = await fetchBooking();
-
-  //顯示加載轉圈動畫
-  showSpinner();
   
   setTimeout(async() => {
     displayBooking(results, currentUser);
