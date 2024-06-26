@@ -26,7 +26,6 @@ function getScrollbarWidth() {
 }
 // 禁止滾動
 function disableScroll() {
-  console.log("禁止滾動");
   if (isPageScrollable()) {
     const scrollbarWidth = getScrollbarWidth();
     document.body.style.overflow = "hidden";

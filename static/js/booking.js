@@ -24,8 +24,6 @@ function updatePageWithData() {
 function showUserInfo(name , email) {
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
-  console.log(nameInput, emailInput);
-
   nameInput.placeholder = name;
   emailInput.placeholder = email;
 }
@@ -101,6 +99,17 @@ function relocateToAttractionPage(e, attractionId) {
   }
 }
 
+//檢查圖片是否完成加載，若完成加載，替換掉低解析度圖片
+function checkImageLoaded(image, imageDiv) {
+  if (image.complete) {
+    imageDiv.classList.add("loaded");
+  } else {
+    image.addEventListener("load", () => {
+      imageDiv.classList.add("loaded");
+    })
+  }
+}
+
 //創建預定行程元素
 function createBookingItem(booking) {
   // 整理資料
@@ -126,7 +135,21 @@ function createBookingItem(booking) {
   const imageDiv = document.createElement("div");
   const image = document.createElement("img");
   imageDiv.classList.add("booking_image");
+
+  //獲取低解析度圖片路徑(在與景點同名資料夾)
+  const name = attraction["name"].replace(/ /g, "_");
+  const lowerResImageUrl = `/static/image/low_res_images/${name}/1.jpg`;    
+  imageDiv.style.backgroundImage = `url("${lowerResImageUrl}")`;
+
+  //真正的圖片
   image.src = `${attraction.image}`;
+  //啟用圖片 lazing loading
+  image.loading = "lazy";
+
+  //監聽圖片是否完成加載，若完成加載，替換掉低解析圖片
+  checkImageLoaded(image,imageDiv);
+
+
   imageDiv.appendChild(image);
   bookingContainer.appendChild(imageDiv);
 
@@ -204,12 +227,11 @@ async function displayBooking(results, userData) {
     //計算價格
     const { price } = booking;
     totalPrice += price;
-    console.log(totalPrice);
+
   })
     
   //更新總價格
-  updateTotalPrice();
-  
+  updateTotalPrice(); 
 
 }
 
