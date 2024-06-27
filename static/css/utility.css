@@ -319,6 +319,10 @@ body {
   border: 1px solid #CCCCCC;
 }
 
+.form_control input:focus {
+  outline: none;
+}
+
 /* 表格驗證錯誤 */
 
 /* 在 html插入錯誤訊息，並在目標input加.shake-effect class */

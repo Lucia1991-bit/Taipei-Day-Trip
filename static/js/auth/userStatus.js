@@ -7,6 +7,7 @@ async function checkUserStatus() {
   if (!token) {
     return false
   }
+
   try {
     //如果有 token，送到後端驗證
     const response = await fetch("/api/user/auth", {
@@ -16,9 +17,11 @@ async function checkUserStatus() {
       }
     })
 
-    const { data: userData } = await response.json();
+    //驗證成功，獲得登入使用者資訊。
+    //驗證不成功，data為 None
+    const { data } = await response.json();
 
-    return userData;
+    return data;
 
   } catch(error) {
     console.error("Error: ", error)

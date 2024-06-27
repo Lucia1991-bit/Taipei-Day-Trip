@@ -30,15 +30,16 @@ main.no-data {
 
 .heading {
   width: 980px;
-  padding-bottom: 20px;
+  padding-bottom: 25px;
   margin: 0 auto;
 }
 
 .heading h2 {
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .heading p {
+  margin-top: 20px;
   display: none;
 }
 
@@ -58,6 +59,11 @@ main.no-data {
   flex-direction: column;
   gap: 20px;
   overflow: hidden;
+}
+
+.booking_group:last-child {
+  margin-bottom: 40px;
+  background-color: red;
 }
 
 .booking_info_container {
@@ -142,6 +148,10 @@ h3.booking_info_title {
   background-color: var(--gray20);
 }
 
+.horizontal-line.first {
+  margin-top: 40px;
+}
+
 .booking_contact_container {
   display: flex;
   max-width: 980px;
@@ -156,6 +166,10 @@ h3.booking_info_title {
   width: 200px;
   border: 1px solid var(--gray20);
   background-color: #fff;
+}
+
+.form_control input:focus {
+  outline: none;
 }
 
 .booking_contact_text {
@@ -208,7 +222,7 @@ h3.booking_info_title {
   border-right-color: var(--cyan50);
   position: absolute;
   animation: s4 1s infinite linear;
-  top: 15%;
+  top: 12%;
   left: 50%;
   display: none;
 }

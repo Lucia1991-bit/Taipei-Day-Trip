@@ -1,10 +1,11 @@
 //fetchData Module
-import { fetchBooking } from "./component/fetchData.js";
-
-//使用者登入狀態相關 Module
-import { checkUserStatus } from "./component/userStatus.js";
+import { fetchBooking } from "./api/fetchData.js";
+//獲取 localStorage的 TOKEN Module
+import { getToken } from "./auth/getToken.js";
+//檢查使用者登入狀態 Module
+import { checkUserStatus } from "./auth/userStatus.js";
 //NavBar以及註冊/登入相關 Module
-import { initNavBar } from "./signup_login.js";
+import { initNavBar } from "./navBar.js";
 
 console.log("attraction.js運行中");
 
@@ -20,7 +21,6 @@ function updatePageWithData() {
   footerEL.classList.toggle("no-data");
   footerText.classList.toggle("no-data");
 }
-
 
 //將使用者名字及信箱顯示在 contact input
 function showUserInfo(name , email) {
@@ -45,21 +45,22 @@ function updateTotalPrice() {
 //以 bookingId 刪除預定行程
 async function deleteBooking(e) {
   const bookingItem = e.currentTarget.parentNode;
-  const bookingId = e.currentTarget.parentNode.getAttribute("data-bookingId");
+  const bookingGroup = bookingItem.closest(".booking_group");
+  const bookingId = bookingItem.getAttribute("data-bookingId");
   // “新台幣 2000 元”
   const priceText = bookingItem.querySelector(".booking_info_text.bold:nth-of-type(3) p").textContent;
   //只截取數字部分，轉成整數
   const price = parseInt(priceText.split(" ")[1]);
 
   //從 localStorage獲取 token
-  const token = localStorage.getItem("token");
+  const TOKEN = getToken();
 
   try {
     const response = await fetch(`/api/booking/${bookingId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${TOKEN}`
       }
     })
 
@@ -71,16 +72,29 @@ async function deleteBooking(e) {
 
     // 如果刪除成功，從 DOM中移除該元素
     bookingItem.remove();
+    //檢查分組容器內是否有別的資料
+    const remainingItems = bookingGroup.querySelectorAll(".booking_info_container");
+
+    if (remainingItems.length === 0) {
+      //如果組內沒有別的項目，刪除整個分組容器
+      bookingGroup.remove();
+    } else {
+      //如果有剩(一組最多兩個項目而已)，刪除分隔線
+      const separator = bookingGroup.querySelector(".horizontal-line");
+      if (separator) {
+        separator.remove();
+      }
+    }
 
     //更新總價格
     totalPrice -= price;
     updateTotalPrice();
 
     //檢查是否還有預定行程
-    const remainBooking = document.querySelectorAll(".booking_info_container");
+    const remainingGroups = document.querySelectorAll(".booking_group");
 
     //如果刪除後行程變成空的，回復到沒有資料的頁面狀態
-    if (remainBooking.length === 0) {
+    if (remainingGroups.length === 0) {
       updatePageWithData();
       document.querySelector(".heading p").style.display = "block";
     }
@@ -193,7 +207,7 @@ function createBookingItem(booking) {
 
 
 //顯示預定資料在畫面上
-async function displayBooking(results, userData) {
+function displayBooking(results, userData) {
   const textEL = document.querySelector(".heading p");
   const container = document.querySelector(".booking_content");
   const divideLine = document.querySelector(".horizontal-line"); 
@@ -275,7 +289,7 @@ function updateUserName(userData) {
   }
   const { name } = userData;
   const welcomeText = document.querySelector("h2.booking_info_title");
-  welcomeText.textContent = `您好，${name}，待預定的行程如下：`;
+  welcomeText.textContent = `您好，${name}，待預訂的行程如下：`;
 }
 
 //顯示加載轉圈動畫
@@ -294,27 +308,27 @@ function hideSpinner() {
 async function init() {
 
   //檢查使用者登入狀態，沒登入跳轉回首頁
-  const currentUser = await checkUserStatus();
+  const isAuthUser = await checkUserStatus();
 
-  if (!currentUser) {
+  if (!isAuthUser) {
     location.href = "/";
     return;
   }
 
   //初始化 NavBar
-  initNavBar(currentUser);
+  initNavBar(isAuthUser);
 
   //顯示加載轉圈動畫
   showSpinner();
 
   //改變歡迎詞用戶名
-  updateUserName(currentUser);
+  updateUserName(isAuthUser);
 
   //加載頁面資料
   const results = await fetchBooking();
   
-  setTimeout(async() => {
-    displayBooking(results, currentUser);
+  setTimeout(() => {
+    displayBooking(results, isAuthUser);
     hideSpinner();
   }, 300)
 

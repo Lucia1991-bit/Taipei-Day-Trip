@@ -222,6 +222,11 @@ main {
     right: 8px;
     width: 24px;
     height: 24px;
+    border-radius: 3px;
+}
+
+.schedule_form_date input:focus {
+  outline: none;
 }
 
 .date_icon {

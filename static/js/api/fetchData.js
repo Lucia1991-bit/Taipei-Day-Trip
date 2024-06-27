@@ -1,3 +1,6 @@
+//獲取 localStorage的 TOKEN Module
+import { getToken } from "../auth/getToken.js";
+
 // 獲取當前網址
 const currentURL = window.location.origin; //在EC2上必須使用這個
 // const currentURL = "http://127.0.0.1:8000";
@@ -80,13 +83,13 @@ async function fetchAttractionByID() {
 //獲取預定資料
 async function fetchBooking() {
   //從 localStorage獲取 token
-  const token = localStorage.getItem("token");
+  const TOKEN = getToken();
 
   try {
     const response = await fetch("/api/booking", {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${TOKEN}`
       }
     })
 

@@ -110,6 +110,13 @@
   position: absolute;
   left: 0;
   top: 0;
+  cursor: pointer;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.buttonField:hover {
+  background-color: var(--cyan80);
 }
 
 .searchButton:active {

@@ -1,12 +1,15 @@
-//fetchData Module
-import { fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
-//Skeleton loading相關 Module
-import { showSkeletonLoading, hideSkeletonLoading } from "./component/skeletonLoading.js"
+//更改圖片網址
+// import { updateBannerUrl } from "./data/handleBannerUrl.js";
 
-//使用者登入狀態相關 Module
-import { checkUserStatus } from "./component/userStatus.js";
+//fetchData Module
+import { fetchAttractionData, fetchMrtData } from "./api/fetchData.js";
+//Skeleton loading相關 Module
+import { showSkeletonLoading, hideSkeletonLoading } from "./view/skeletonLoading.js";
+//檢查使用者登入狀態 Module
+import { checkUserStatus } from "./auth/userStatus.js";
 //NavBar以及註冊/登入相關 Module
-import { initNavBar } from "./signup_login.js";
+import { initNavBar } from "./navBar.js";
+
 
 // const url = window.location.href;
 // console.log(url);
@@ -362,9 +365,9 @@ async function init() {
   }, 300)
 
   //檢查使用者登入狀態
-  const currentUser = await checkUserStatus();
+  const isAuthUser = await checkUserStatus();
   //初始化 NavBar
-  initNavBar(currentUser);
+  initNavBar(isAuthUser);
   
   //監聽搜尋表單提交
   submitSearchForm();

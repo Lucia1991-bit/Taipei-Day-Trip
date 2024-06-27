@@ -5,7 +5,6 @@ import mysql.connector
 from PIL import Image, ImageFilter
 import requests
 import tempfile
-from database import get_db
 
 
 attractions = []

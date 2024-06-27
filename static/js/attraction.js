@@ -1,14 +1,17 @@
 //fetchData Module
-import { fetchAttractionByID } from "./component/fetchData.js";
+import { fetchAttractionByID } from "./api/fetchData.js";
 
 //顯示註冊/登入頁面 Module
-import { showLoginModal } from "./component/popupModal.js";
+import { showLoginModal } from "./view/popupModal.js";
 
-//使用者登入狀態相關 Module
-import { checkUserStatus } from "./component/userStatus.js";
+//檢查使用者登入狀態 Module
+import { checkUserStatus } from "./auth/userStatus.js";
 
 //NavBar以及註冊/登入相關 Module
-import { initNavBar } from "./signup_login.js";
+import { initNavBar } from "./navBar.js";
+
+//獲取 localStorage的 TOKEN Module
+import { getToken } from "./auth/getToken.js";
 
 
 console.log("attraction.js運行中");
@@ -220,7 +223,7 @@ function showStatusMessage(message, type) {
 //創建新預定
 async function createBooking(requestData) {
   //從 localStorage獲取 token
-  const token = localStorage.getItem("token");
+  const TOKEN = getToken();
 
   try {
     console.log("送出請求...");
@@ -228,7 +231,7 @@ async function createBooking(requestData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${TOKEN}`
       },
       body: JSON.stringify(requestData)
     })
@@ -333,16 +336,16 @@ async function init() {
 
   
   //檢查使用者登入狀態
-  const currentUser = await checkUserStatus();
+  const isAuthUser = await checkUserStatus();
   //初始化 NavBar
-  initNavBar(currentUser);
+  initNavBar(isAuthUser);
 
   //監聽預約行程按鈕
   //如果沒登入，顯示登入/註冊頁面。如果已登入，送出表單請求
   const bookingForm = document.querySelector(".schedule_form");
   bookingForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!currentUser) {
+    if (!isAuthUser) {
       showLoginModal();
     }
     submitBookingForm();
