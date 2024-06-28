@@ -2,7 +2,7 @@
 // import { updateBannerUrl } from "./data/handleBannerUrl.js";
 
 //fetchData Module
-import { fetchAttractionData, fetchMrtData } from "./api/fetchData.js";
+import { fetchAttractionData, fetchMrtData } from "./api/attractionRequest.js";
 //Skeleton loading相關 Module
 import { showSkeletonLoading, hideSkeletonLoading } from "./view/skeletonLoading.js";
 //檢查使用者登入狀態 Module

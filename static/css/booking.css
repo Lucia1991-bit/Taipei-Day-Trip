@@ -83,7 +83,7 @@ main.no-data {
   right: 0;
   position: absolute;
   font-size: 20px;
-  color: var(--gray50);
+  color: var(--gray40);
   padding: 5px;
   cursor: pointer;
 }

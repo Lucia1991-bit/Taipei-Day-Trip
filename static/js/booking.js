@@ -1,7 +1,6 @@
 //fetchData Module
-import { fetchBooking } from "./api/fetchData.js";
-//獲取 localStorage的 TOKEN Module
-import { getToken } from "./auth/getToken.js";
+import { fetchBooking, deleteBooking } from "./api/bookingRequest.js";
+
 //檢查使用者登入狀態 Module
 import { checkUserStatus } from "./auth/userStatus.js";
 //NavBar以及註冊/登入相關 Module
@@ -40,69 +39,57 @@ function updateTotalPrice() {
   priceEL.textContent = `總價：新台幣 ${totalPrice} 元`;
 }
 
-
-//點擊垃圾桶 icon，獲取對應的 bookingId，送出刪除請求
-//以 bookingId 刪除預定行程
-async function deleteBooking(e) {
-  const bookingItem = e.currentTarget.parentNode;
+//從 DOM 中移除預定行程項目
+function removeBookingItemFromDOM(bookingItem) {
   const bookingGroup = bookingItem.closest(".booking_group");
-  const bookingId = bookingItem.getAttribute("data-bookingId");
-  // “新台幣 2000 元”
+  // "新台幣 2000 元"
   const priceText = bookingItem.querySelector(".booking_info_text.bold:nth-of-type(3) p").textContent;
-  //只截取數字部分，轉成整數
+  // 只截取數字部分,轉成整數
   const price = parseInt(priceText.split(" ")[1]);
 
-  //從 localStorage獲取 token
-  const TOKEN = getToken();
+  // 從 DOM 中移除該元素
+  bookingItem.remove();
 
-  try {
-    const response = await fetch(`/api/booking/${bookingId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${TOKEN}`
-      }
-    })
+  // 檢查分組容器內是否有別的資料
+  const remainingItems = bookingGroup.querySelectorAll(".booking_info_container");
 
-    const results = await response.json();
-
-    if (!response.ok) {
-      throw new Error(results.message);
+  if (remainingItems.length === 0) {
+    // 如果組內沒有別的項目,刪除整個分組容器
+    bookingGroup.remove();
+  } else {
+    // 如果有剩(一組最多兩個項目而已),刪除分隔線
+    const separator = bookingGroup.querySelector(".horizontal-line");
+    if (separator) {
+      separator.remove();
     }
+  }
+  // 更新總價格
+  totalPrice -= price;
+  updateTotalPrice();
 
-    // 如果刪除成功，從 DOM中移除該元素
-    bookingItem.remove();
-    //檢查分組容器內是否有別的資料
-    const remainingItems = bookingGroup.querySelectorAll(".booking_info_container");
+  // 檢查是否還有預定行程
+  const remainingGroups = document.querySelectorAll(".booking_group");
 
-    if (remainingItems.length === 0) {
-      //如果組內沒有別的項目，刪除整個分組容器
-      bookingGroup.remove();
-    } else {
-      //如果有剩(一組最多兩個項目而已)，刪除分隔線
-      const separator = bookingGroup.querySelector(".horizontal-line");
-      if (separator) {
-        separator.remove();
-      }
-    }
-
-    //更新總價格
-    totalPrice -= price;
-    updateTotalPrice();
-
-    //檢查是否還有預定行程
-    const remainingGroups = document.querySelectorAll(".booking_group");
-
-    //如果刪除後行程變成空的，回復到沒有資料的頁面狀態
-    if (remainingGroups.length === 0) {
-      updatePageWithData();
-      document.querySelector(".heading p").style.display = "block";
-    }
-
-  } catch (error) {
-    console.error("Error: ", error)
+  // 如果刪除後行程變成空的,回復到沒有資料的頁面狀態
+  if (remainingGroups.length === 0) {
+    updatePageWithData();
+    document.querySelector(".heading p").style.display = "block";
   }
 }
+
+// 點擊垃圾桶 icon,獲取對應的 bookingId,送出刪除請求
+async function handleDeleteBooking(e) {
+  const bookingItem = e.currentTarget.parentNode;
+  const bookingId = bookingItem.getAttribute("data-bookingId");
+
+  try {
+    await deleteBooking(bookingId);
+    removeBookingItemFromDOM(bookingItem);
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+}
+
 
 //點擊預定行程元素，導向該行程頁面
 function relocateToAttractionPage(e, attractionId) {
@@ -114,6 +101,7 @@ function relocateToAttractionPage(e, attractionId) {
     }
   }
 }
+
 
 //檢查圖片是否完成加載，若完成加載，替換掉低解析度圖片
 function checkImageLoaded(image, imageDiv) {
@@ -143,8 +131,8 @@ function createBookingItem(booking) {
   //垃圾桶 icon
   const icon = document.createElement("i");
   icon.className = "fa-solid fa-trash booking_info_icon";
-  //監聽點擊事件
-  icon.addEventListener("click", deleteBooking);
+  //監聽垃圾桶點擊事件，觸發刪除預定行程
+  icon.addEventListener("click", handleDeleteBooking);
   bookingContainer.appendChild(icon);
 
   //圖片

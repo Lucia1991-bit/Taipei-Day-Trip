@@ -2,8 +2,6 @@
 import { fetchBooking } from "./component/fetchData.js";
 
 
-
-
 async function initNavBookingBtn() {
   const bookingBtn = document.getElementById("nav_bookingBtn");
   const prevModal = document.querySelector(".booking_modal");
