@@ -1,7 +1,5 @@
 import mysql.connector
 from mysql.connector.pooling import MySQLConnectionPool
-from fastapi import Depends
-from typing import Annotated
 import json
 from dotenv import load_dotenv
 import os
@@ -11,9 +9,13 @@ from contextlib import contextmanager
 load_dotenv()
 
 # 資料庫連接設定
-# .env通常儲存key=value pair，如果想儲存整個字典需先轉換成字串
-database_config_str = os.getenv("DATABASE_CONFIG")
-database_config = json.loads(database_config_str)
+database_config = {
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": "localhost",
+    "database": "taipei_day_trip",
+    "charset": "utf8mb4"
+}
 
 # 資料庫連接設定
 pool = MySQLConnectionPool(
@@ -23,10 +25,9 @@ pool = MySQLConnectionPool(
     ** database_config
 )
 
+
 # 連接資料庫
 # 用 contextmanager管理連接的獲取和釋放
-
-
 @contextmanager
 def get_db():
     # 初始化資料庫
@@ -64,6 +65,8 @@ def execute_query(query, values=None, fetch_method="fetchone"):
                 # 如果 SQL語句開頭不是 SELECT，執行新增/刪除指令
                 if not query.lstrip().upper().startswith("SELECT"):
                     db.commit()
+                    print("新增/刪除資料成功")
+
                 return result
 
         except mysql.connector.Error as e:

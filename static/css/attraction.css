@@ -1,13 +1,3 @@
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--light);
-  color: var(--gray70);
-  overflow-x: hidden;
-}
 
 /* Main Section */
 main {
@@ -211,6 +201,7 @@ main {
 
 .schedule_form_date {
   position: relative;
+  white-space: nowrap;
 }
 
 .schedule_form_date input {
@@ -231,6 +222,11 @@ main {
     right: 8px;
     width: 24px;
     height: 24px;
+    border-radius: 3px;
+}
+
+.schedule_form_date input:focus {
+  outline: none;
 }
 
 .date_icon {
@@ -249,6 +245,7 @@ main {
   align-items: center;
   justify-content: center;
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Time Selector */
@@ -294,6 +291,13 @@ main {
 .schedule_form_price {
   margin-left: 10px;
   font-weight: 400;
+
+}
+
+.schedule_form_button_container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
 .schedule_form_button {
@@ -305,20 +309,38 @@ main {
   font-weight: 300;
   font-size: 18px;
   line-height: 16px;
-  margin-top: 10px;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.schedule_form_button:hover {
+  background-color: var(--cyan80);
 }
 
 .schedule_form_button:active {
   transform: scale(0.98);
 }
 
-/* Divide Line */
-.horizontal-line {
-  width: 100%;
-  height: 1px;
-  background-color: var(--gray20);
+/* 成功 /錯誤訊息 */
+.schedule_message {
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
+
+.schedule_message.success {
+  color: #41B06E;
+}
+
+.schedule_message.fail {
+  color: #cb3739;
+}
+
+
+
+
+
 
 /* Attraction Profile Section */
 .attraction_info_container {
@@ -342,6 +364,14 @@ main {
   font-weight: 600;
   line-height: 23px;
 }
+
+/* Divide Line */
+.horizontal-line {
+  width: 100%;
+  height: 1px;
+  background-color: var(--gray20);
+}
+
 
 
 /* Skeleton Loading */
@@ -407,16 +437,14 @@ main {
 
 /* RWD */
 @media (max-width: 1200px) {
-  .nav_title {
-    padding-left: 10px;
-  }
 
   .main_container {
     width: 100%;
+    min-width: 320px;
   }
 
   .main_container.skeleton_container {
-    width: 100vw;
+    width: 100%;
   }
 
   .slider_schedule_container {
@@ -429,6 +457,10 @@ main {
   .slides_wrapper {
     height: 100%;
   } 
+
+  .schedule_form_date input {
+    width: auto;
+  }
 }
 
 @media (max-width: 880px) {

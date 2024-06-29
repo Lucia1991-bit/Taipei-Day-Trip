@@ -1,46 +1,68 @@
-import { showLoginModal, hideLoginModal, togglePages, disableScroll, enableScroll } from "./component/popupModal.js";
-
-
+import { showLoginModal, hideLoginModal, togglePages } from "./view/popupModal.js";
 
 //顯示成功/錯誤訊息
-function showMessage(field, message, isSuccess = true) {
+function showMessage(field, message, type = "success") {
   const page = document.getElementById(`${field}`);
   const form = document.getElementById(`${field}Form`);
   const formLink = document.getElementById(`${field}LinkContent`);
-  let text = document.querySelector(".validate_error p");
 
-  //如果錯誤訊息已存在，更換訊息內容（防止重複顯示錯誤訊息）
-  //如果不存在製作新訊息
-  if (text) {
-    text.textContent = message;
-  } else {
-    const div = document.createElement("div");
-    const icon = document.createElement("i");
-    text = document.createElement("p");
+  let oldMessage = document.querySelector(".form_message");
 
-    icon.classList.add("fa-solid", isSuccess ? "fa-check-circle" : "fa-circle-exclamation");
-    div.classList.add("form_message", isSuccess ? "success" : "fail");
-    text.textContent = message;
+  //如果有舊的訊息，則先移除
+  if (oldMessage) {
+    form.removeChild(oldMessage);
+  }
+ 
+  let text = document.createElement("p");
+  const div = document.createElement("div");
+  const icon = document.createElement("i");
 
-    div.appendChild(icon);
-    div.appendChild(text);
-    form.insertBefore(div, formLink);
+  // 設定 icon 和 message 的顏色
+  switch (type) {
+    case "success":
+      icon.classList.add("fa-solid", "fa-check-circle");
+      div.classList.add("form_message", "success");
+      break;
+    case "fail":
+      icon.classList.add("fa-solid", "fa-circle-exclamation");
+      div.classList.add("form_message", "fail");
+      break;
+    case "pending":
+      icon.classList.add("fa-solid", "fa-warning");
+      div.classList.add("form_message", "pending");
+      break;
+    default:
+      console.log(`Unknown type: ${type}`);
+      break
+  }
 
-    if (!isSuccess) {
-      page.classList.add("shake-effect");
-    }
-    //看要不要自動移除訊息
+  text.textContent = message;
+
+  div.appendChild(icon);
+  div.appendChild(text);
+  form.insertBefore(div, formLink);
+
+  if (type === 'fail') {
+    page.classList.remove("shake-effect");
     setTimeout(() => {
-      page.classList.remove("shake-effect");
-      clearMessage();
-    }, 3000)
-    
+      page.classList.add("shake-effect");
+    }, 100);
   }
 }
 
-//移除訊息
-function clearMessage(){
-  const message = document.querySelector(".form_message");
+//把表單清乾淨
+function clearForm(field){
+  const page = document.getElementById(`${field}`);
+  const form = document.getElementById(`${field}Form`);
+  const inputs = form.querySelectorAll(".form_control input");
+  const message = form.querySelector(".form_message");
+
+  page.classList.remove("shake-effect");
+
+  inputs.forEach(input => {
+    input.value = "";
+  })
+
   if (message) {
     message.remove();
   }
@@ -49,7 +71,6 @@ function clearMessage(){
 
 //登入使用者
 async function loginUser(requestData) {
-  console.log("送出請求...");
 
   try {
     const response = await fetch("/api/user/auth", {
@@ -65,8 +86,13 @@ async function loginUser(requestData) {
     if (!response.ok) {
       // 登入失敗，顯示錯誤訊息
       if (response.status === 400) {
-        showMessage("login", result.message, false);
+        showMessage("login", result.message, "fail");
       }
+      //輸入格式錯誤，顯示錯誤訊息
+      if (response.status === 422) {
+        showMessage("login", "請輸入正確的電子信箱格式", "fail");
+      }
+
       throw new Error(result.message);
     }
     
@@ -94,12 +120,8 @@ async function submitLoginForm(e) {
     password
   }
 
-  console.log("送出登入請求");
-
+  showMessage("login", "驗證中...", "pending");
   const result = await loginUser(requestData);
-
-  emailInput.value = "";
-  passwordInput.value = "";
 
   //註冊成功
   if (result) {
@@ -109,11 +131,11 @@ async function submitLoginForm(e) {
     localStorage.setItem("token", token);
 
     //顯示成功訊息
-    showMessage("login", "登入成功，請等待跳轉頁面", true);
+    showMessage("login", "登入成功，請等待跳轉頁面", "success");
 
-    //跳轉到首頁
+    //重新加載頁面
     setTimeout(()=> {
-      window.location.href = "/";
+      location.reload();
     }, 500)
 
   } else {
@@ -124,7 +146,6 @@ async function submitLoginForm(e) {
 
 // 註冊使用者
 async function registerUser(requestData) {
-  console.log("送出請求...");
   try {
     const response = await fetch("/api/user", {
       method: "POST",
@@ -139,8 +160,14 @@ async function registerUser(requestData) {
     if (!response.ok) {
       // 註冊失敗，顯示錯誤訊息
       if (response.status === 400) {
-        showMessage("signup", result.message, false);
+        showMessage("signup", result.message, "fail");
       }
+
+      //輸入格式錯誤，顯示錯誤訊息
+      if (response.status === 422) {
+        showMessage("signup", "請輸入正確的電子信箱格式", "fail");
+      }
+
       throw new Error(result.message);
     }
 
@@ -183,7 +210,7 @@ async function submitSignupForm(e) {
   }
 
   //送註冊請求到後端
-  console.log("送出註冊請求");
+  showMessage("signup", "驗證中...", "pending");
   const successStatus = await registerUser(requestData);
 
 
@@ -193,7 +220,7 @@ async function submitSignupForm(e) {
     emailInput.value = "";
     passwordInput.value = "";
     //顯示成功訊息
-    showMessage("signup", "註冊成功，請登入會員", true);
+    showMessage("signup", "註冊成功，請登入會員", "success");
 
     //跳轉到登入頁面
     setTimeout(()=> {
@@ -233,20 +260,23 @@ function initModal() {
       hideLoginModal(); 
     });
   })
-  // overlayEL.addEventListener("click", (e) => {
-  //   if (e.target === overlayEL) {
-  //     hideLoginModal();
-  //   }
-  // });
+  
+  overlayEL.addEventListener("click", (e) => {
+    if (e.target === overlayEL) {
+      hideLoginModal();
+    }
+  });
 
   //點擊註冊按鈕，從登入頁面轉換成註冊頁面
   signupLink.addEventListener("click", ()=> {
     togglePages(signupPage, loginPage);
+     clearForm("login");
   })
 
   //點擊登入按鈕，從註冊頁面轉換成登入頁面
   loginLink.addEventListener("click", ()=> {
     togglePages(loginPage, signupPage);
+     clearForm("signup");
   })
 
   // 監聽註冊/登入表單提交事件
@@ -282,4 +312,14 @@ function initMobileMenu() {
   
 }
 
-export { initModal, initMobileMenu };
+//登出使用者
+function logoutUser() {
+  //清除token並更新界面
+  localStorage.removeItem("token");
+
+  //重新加載頁面
+  location.reload();
+}
+
+
+export { initModal, initMobileMenu, logoutUser };

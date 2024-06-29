@@ -4,6 +4,12 @@ const loginPage = document.querySelector(".login");
 const signupPage = document.querySelector(".signup");
 const overlayEL = document.querySelector(".overlay");
 
+// 檢查頁面是否需要滾動
+// 如果頁面本來就沒有滾動軸，再多加上滾動軸寬度後頁面反而會偏移
+function isPageScrollable() {
+  return document.documentElement.scrollHeight > document.documentElement.clientHeight;
+}
+
 // 獲取滾動條的寬度
 function getScrollbarWidth() {
   const outer = document.createElement("div");
@@ -20,15 +26,23 @@ function getScrollbarWidth() {
 }
 // 禁止滾動
 function disableScroll() {
-  const scrollbarWidth = getScrollbarWidth();
-  document.body.style.overflow = "hidden";
-  //滾軸消失後把右邊 padding補上滾軸寬度
-  document.body.style.paddingRight = `${scrollbarWidth}px`;
+  if (isPageScrollable()) {
+    const scrollbarWidth = getScrollbarWidth();
+    document.body.style.overflow = "hidden";
+    //滾軸消失後，把右邊補上滾軸寬度
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    // navBar是 fixed，不會隨 body改變寬度，所以需要另外調整 navBar 的寬度
+    document.querySelector(".nav").style.width = `calc(100% - ${scrollbarWidth}px)`;
+  } else {
+    document.body.style.overflow = "hidden";
+  }
 }
 // 恢復滾動
 function enableScroll() {
   document.body.style.overflowY = "auto";
-  document.body.style.paddingRight = '';
+  document.body.style.paddingRight = "";
+  // 恢復 navBar 的寬度
+  document.querySelector(".nav").style.width = "100%";
 }
 
 

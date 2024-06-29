@@ -14,7 +14,7 @@
       referrerpolicy="no-referrer"
     />
   <!-- hero section的圖片預先加載 -->
-  <link rel="preload" href="/static/image/welcome.png" as="image">
+  <link rel="preload" href="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1719508677/welcome_jvp7bj.png" as="image" fetchpriority="high">
 </head>
   <title>台北一日遊</title>
 </head>
@@ -43,7 +43,10 @@
           <button type="submit" class="formButton button">
             登入帳戶
           </button>
-
+          <!-- <div class="form_message">
+            <i></i>
+            <p></p>
+          </div> -->
           <div class="form_linkContent" id="loginLinkContent">
               還沒有帳戶？
               <span class="link" id="signupLink">點此註冊</span>
@@ -74,8 +77,8 @@
             註冊新帳戶
           </button>
           <!-- <div class="form_message">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <p>信箱輸入錯誤</p>
+            <i></i>
+            <p></p>
           </div> -->
           <div class="form_linkContent" id="signupLinkContent">
               已經有帳戶了？
@@ -85,6 +88,8 @@
       </div>
     </section>
   </div>
+
+
 
   <!-- Navigation Section-->
   <nav class="nav">
@@ -100,7 +105,8 @@
       <ul class="nav_list">
         <!-- 按鈕 -->
         <li class="nav_list_item" id="nav_bookingBtn">
-          <a href="booking.html">預定行程</a>
+          <span>預訂行程</span>
+          
         </li>
         <li class="nav_list_item" id="nav_loginBtn">
           <span>登入/註冊</span>
@@ -118,7 +124,7 @@
   <ul class="mobile_nav_list">
     <div></div>
     <li class="nav_list_item" id="mobile_nav_bookingBtn">
-      <a href="/booking">預定行程</a>
+      <span>預訂行程</span>
     </li>
     <li class="nav_list_item" id="mobile_nav_loginBtn">
       <span>登入/註冊</span>
@@ -128,10 +134,10 @@
     <!-- Hero Section -->
   <header class="banner">
     <picture>
-      <source media="(max-width: 480px)" srcset="/static/image/banner/welcome-mobile.png">
-      <source media="(max-width: 768px)" srcset="/static/image/banner/welcome-tablet.png">
-      <source media="(max-width: 1200px)" srcset="/static/image/banner/welcome-laptop.png">
-      <img src="/static/image/banner/welcome.png" alt="Welcome">
+      <source media="(max-width: 480px)" srcset="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1719508677/welcome-mobile_toqtb3.png">
+      <source media="(max-width: 768px)" srcset="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1719508677/welcome-tablet_n0ujux.png">
+      <source media="(max-width: 1200px)" srcset="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1719508677/welcome-laptop_vjwyiv.png">
+      <img src="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1719508677/welcome_jvp7bj.png" alt="Welcome" fetchpriority="high">
     </picture>
     <div class="banner_container">
       <!-- Slogan -->

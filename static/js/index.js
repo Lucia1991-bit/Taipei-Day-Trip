@@ -1,12 +1,15 @@
+//更改圖片網址
+// import { updateBannerUrl } from "./data/handleBannerUrl.js";
+
 //fetchData Module
-import { fetchAttractionData, fetchMrtData } from "./component/fetchData.js";
-//登入/註冊頁面相關 Module
-import { showLoginModal } from "./component/popupModal.js";
-import { initModal, initMobileMenu } from "./signup_login.js";
-//檢查使用者登入狀態及登出 Module
-import { checkUserStatus, logoutUser } from "./component/userStatus.js";
+import { fetchAttractionData, fetchMrtData } from "./api/fetchData.js";
 //Skeleton loading相關 Module
-import { showSkeletonLoading, hideSkeletonLoading } from "./component/skeletonLoading.js"
+import { showSkeletonLoading, hideSkeletonLoading } from "./view/skeletonLoading.js";
+//檢查使用者登入狀態 Module
+import { checkUserStatus } from "./auth/userStatus.js";
+//NavBar以及註冊/登入相關 Module
+import { initNavBar } from "./navBar.js";
+
 
 // const url = window.location.href;
 // console.log(url);
@@ -175,6 +178,8 @@ function createAttractionItem(attraction) {
   title.textContent = attraction["name"];
   mrt.textContent = attraction["mrt"];
   category.textContent = attraction["category"];
+
+  
   attractionLink.appendChild(image);
   itemTitle.appendChild(title);
   imgContainer.appendChild(attractionLink);
@@ -207,7 +212,7 @@ async function displayAttractions(results) {
   hideSkeletonLoading();
 
   data.forEach( attraction => {
-    const  attractionItem = createAttractionItem(attraction);
+    const attractionItem = createAttractionItem(attraction);
     container.appendChild(attractionItem);
   })
 
@@ -359,36 +364,16 @@ async function init() {
     displayAttractions(results);
   }, 300)
 
+  //檢查使用者登入狀態
+  const isAuthUser = await checkUserStatus();
+  //初始化 NavBar
+  initNavBar(isAuthUser);
+  
   //監聽搜尋表單提交
   submitSearchForm();
-
-  //檢查登入狀態，並改變登入/註冊按鈕文字
-  const navLoginBtn = document.getElementById("nav_loginBtn");
-  const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
-
-  const isLogin = await checkUserStatus();
-
-    //監聽登入/註冊視窗
-    initModal();
-    //監聽手機版導覽列
-    initMobileMenu();
-
-   if (isLogin) {
-    navLoginBtn.textContent = "登出系統";
-    mobileNavLoginBtn.textContent = "登出系統";
-
-    //移除原本的監聽器
-    navLoginBtn.removeEventListener("click", showLoginModal);
-    mobileNavLoginBtn.removeEventListener("click", showLoginModal);
-
-    //監聽登出按鈕
-    navLoginBtn.addEventListener("click", logoutUser);
-    mobileNavLoginBtn.addEventListener("click", logoutUser);
-
-   } 
 }
 
-window.addEventListener("load", init);
+document.addEventListener("DOMContentLoaded", init);
 
 
 
