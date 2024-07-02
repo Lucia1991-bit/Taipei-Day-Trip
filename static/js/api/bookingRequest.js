@@ -79,12 +79,24 @@ async function deleteBooking(bookingId) {
       throw new Error(results.message);
     }
 
-    return results;
+    return results.ok;
+
   } catch (error) {
     console.error("Error: ", error);
     throw error;
   }
+
 }
+
+//創建 Order
+async function createOrder(requestData) {
+  try {
+
+  } catch(error) {
+
+  }
+}
+  
 
 
 export { createBooking, fetchBooking, deleteBooking };

@@ -21,7 +21,7 @@ database_config = {
 pool = MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=20,
-    connection_timeout=300,  # 單位為秒
+    connection_timeout=1800,  # 單位為秒
     ** database_config
 )
 

@@ -36,8 +36,9 @@
 
             <input id="login-password" type="password" name="password" placeholder="輸入密碼" required>
           </div>
-          <button type="submit" class="formButton button">
-            登入帳戶
+          <button type="submit" class="formButton" id="loginBtn">
+            <span class="button-text">登入帳戶</span>
+            <span class="buttonSpinner"></span>
           </button>
 
           <div class="form_linkContent" id="loginLinkContent">
@@ -65,9 +66,9 @@
           </div>
           <div class="form_control">
             <input id="signup-password" type="password" name="password" placeholder="輸入密碼" required>
-          </div>
-          <button type="submit" class="formButton button">
-            註冊新帳戶
+          <button type="submit" class="formButton button" id="signupBtn">
+            <span class="button-text">註冊新帳戶</span>
+            <span class="buttonSpinner"></span>
           </button>
           <!-- <div class="form_message">
             <i class="fa-solid fa-circle-exclamation"></i>
@@ -172,8 +173,9 @@
               </div>
               
               <div class="schedule_form_button_container">
-                <button type="submit" class="schedule_form_button">
-                    開始預約行程
+                <button type="submit" class="schedule_form_button" id="schedule_form_button">
+                    <span class="button-text">開始預約行程</span>
+                    <span class="buttonSpinner"></span>
                 </button>
 
                 <div class="schedule_message">

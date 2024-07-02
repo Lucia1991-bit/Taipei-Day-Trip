@@ -1,25 +1,20 @@
 //fetchData Module
 import { fetchAttractionByID } from "./api/attractionRequest.js";
 import { createBooking } from "./api/bookingRequest.js";
-
 //幻燈片相關 Module
 import { initImageSlider, initSliderEvents } from "./view/imageSlider.js";
-
 //顯示註冊/登入頁面 Module
 import { showLoginModal } from "./view/popupModal.js";
-
 //檢查使用者登入狀態 Module
 import { checkUserStatus } from "./auth/userStatus.js";
-
 //NavBar以及註冊/登入相關 Module
 import { initNavBar } from "./navBar.js";
-
 //顯示成功／錯誤訊息 Module
 import { showStatusMessage } from "./view/showMessage.js";
-
+//顯示按鈕 loading
+import { showButtonLoading, hideButtonLoading } from "./view/buttonLoading.js";
 
 console.log("attraction.js運行中");
-
 
 //預載圖片，給一個記憶體空間
 const imagePreloadArr = [];
@@ -33,7 +28,6 @@ function preloadImages(imageURLs) {
     imagePreloadArr.push(img);
   })
 }
-
 
 //隱藏 skeleton loading
 const mainContainer = document.querySelector(".main_container");
@@ -113,7 +107,6 @@ let lastRequest = null;
 
 //送出預定行程表單
 async function submitBookingForm() {
-
   //取得網址的景點id
   const path = window.location.pathname;
   const parts = path.split("/");
@@ -151,8 +144,16 @@ async function submitBookingForm() {
   //用...防止直接修改原始物件時影響 lastRequest
   lastRequest = { ...requestData };
 
-  //送出請求前可以將loading顯示在按鈕
+  //送出請求將loading顯示在按鈕
+  const submitBtn = document.querySelector(".schedule_form_button");
+
+  showButtonLoading(submitBtn);
+
   const successStatus = await createBooking(requestData);
+
+  setTimeout(() => {  
+    hideButtonLoading(submitBtn);
+  }, 100)
 
   if (successStatus) {
     //顯示成功訊息
@@ -178,13 +179,17 @@ function checkDate() {
   //"Fri Jun 28 2024 03:33:23 GMT+0800 (台北標準時間)"
   const today = new Date();
 
-  // 格式化日期為 "YYYY-MM-DD" 格式
+  //幾日前預定
+  const reservedDays = 3;
+
+  //將目前時間多加上需保留的預定時間
+  today.setDate(today.getDate() + reservedDays);
   // 將時間調整為台北標準時間(toISOString()回傳的是UTC時間)
   today.setHours(today.getHours() + 8);
 
+  // 格式化日期為 "YYYY-MM-DD" 格式
   //toISOString後變成"2024-06-27T19:33:23.326Z"
   const formattedDate = today.toISOString().split("T")[0];
-
   const dateInput = document.getElementById("date");
 
   // 設定最小日期為當前日期

@@ -6,6 +6,9 @@ import { registerUser, loginUser } from "./api/signup_loginRequest.js";
 //顯示成功 /錯誤訊息 Module
 import { showMessage } from "./view/showMessage.js";
 
+//顯示按鈕 loading
+import { showButtonLoading, hideButtonLoading } from "./view/buttonLoading.js";
+
 
 //把表單清乾淨
 function clearForm(field){
@@ -40,8 +43,13 @@ async function submitLoginForm(e) {
     password
   }
 
-  showMessage("login", "驗證中...", "pending");
+  showButtonLoading(loginBtn);
+  // showMessage("login", "驗證中...", "pending");
   const result = await loginUser(requestData);
+
+  setTimeout(() => {  
+    hideButtonLoading(loginBtn);
+  }, 100)
 
   //註冊成功
   if (result) {
@@ -77,6 +85,9 @@ async function submitSignupForm(e) {
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
+  const signupBtn = document.getElementById("signupBtn");
+  const loginBtn = document.getElementById("loginBtn");
  
   // //驗證 password 格式
   // const isValidPassword = validatePassword(password);
@@ -95,8 +106,13 @@ async function submitSignupForm(e) {
   }
 
   //送註冊請求到後端
-  showMessage("signup", "驗證中...", "pending");
+  showButtonLoading(signupBtn);
+  // showMessage("signup", "驗證中...", "pending");
   const successStatus = await registerUser(requestData);
+
+  setTimeout(() => {  
+    hideButtonLoading(signupBtn);
+  }, 100)
 
 
   //註冊成功，清空 input

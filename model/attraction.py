@@ -23,7 +23,7 @@ class AttractionModel:
 
 
     def get_attraction_data_by_page_and_keyword(page: int, keyword: str, page_size: int):
-        sql_base = "SELECT * FROM taipei_day_trip.attraction_view"
+        sql_base = "SELECT * FROM taipei_day_trip.attraction_opt_view"
         # 如果未提供關鍵字，獲取所有景點資料
         # 一次查13筆資料，如果資料列表長度 > 12，就能確定會有下一頁
         # offset還是12
@@ -45,9 +45,14 @@ class AttractionModel:
         # 因為圖片列表是字串格式，回傳前要先處理
         else:
             for result in results:
-                img_list = result["images"].split(",")
-                result["images"] = img_list
+                # 使用正則表達式分割 URL
+                url_pattern = r"https://res\.cloudinary\.com/[^/]+/image/upload/[^/]+/v\d+/[^,]+\.jpg"
+                url_list = re.findall(
+                    url_pattern, result["images"], re.IGNORECASE)
+                result["images"] = url_list
 
+                # img_list = result["images"].split(",")
+                # result["images"] = img_list
         print("以關鍵字獲取景點資料成功")
 
         return results
@@ -67,7 +72,7 @@ class AttractionModel:
     def get_attraction_data_by_id(attractionID):
         # SQL的 group_concat參數長度預設值很小(1024)，圖片網址很長，因此必須重新設定他的 max_len
         sql = """
-        SELECT * FROM taipei_day_trip.attraction_view
+        SELECT * FROM taipei_day_trip.attraction_opt_view
         WHERE id = %s;
       """
         values = (attractionID,)
@@ -78,7 +83,9 @@ class AttractionModel:
             return None
         else:
             # 因為圖片列表是字串格式，回傳前要先處理
-            img_list = results["images"].split(",")
-            results["images"] = img_list
+            url_pattern = r"https://res\.cloudinary\.com/[^/]+/image/upload/[^/]+/v\d+/[^,]+\.jpg"
+            url_list = re.findall(
+                url_pattern, results["images"], re.IGNORECASE)
+            results["images"] = url_list
 
             return results

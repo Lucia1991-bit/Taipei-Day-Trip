@@ -311,6 +311,7 @@ main {
   line-height: 16px;
   cursor: pointer;
   white-space: nowrap;
+  position: relative;
 }
 
 .schedule_form_button:hover {
@@ -320,6 +321,20 @@ main {
 .schedule_form_button:active {
   transform: scale(0.98);
 }
+
+/* Button Loading */
+.schedule_form_button.showBtnLoading .buttonSpinner {
+  opacity: 1;
+  visibility: visible;
+  animation: spin 1s linear infinite;
+}
+
+.schedule_form_button.showBtnLoading .button-text {
+  visibility: hidden;
+  opacity: 0;
+}
+
+
 
 /* 成功 /錯誤訊息 */
 .schedule_message {
@@ -336,10 +351,6 @@ main {
 .schedule_message.fail {
   color: #cb3739;
 }
-
-
-
-
 
 
 /* Attraction Profile Section */

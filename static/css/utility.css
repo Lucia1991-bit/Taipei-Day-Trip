@@ -167,12 +167,6 @@ body {
 
 
 
-
-
-
-
-
-
 .hamburger-menu {
   display: none;
 }
@@ -380,6 +374,7 @@ body {
   font-weight: 300;
   margin-bottom: 10px;
   cursor: pointer;
+  position: relative;
 }
 
 .formButton:active {
@@ -398,6 +393,37 @@ body {
   color: var(--cyan50);
   text-decoration: underline;
 }
+
+/* Button Loading */
+.buttonSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  /* transition: opacity 0.1s ease-in-out; */
+  transform: translate(-50%, -50%) rotate(0deg);
+  opacity: 0;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.formButton.showBtnLoading .buttonSpinner {
+  opacity: 1;
+  visibility: visible;
+  animation: spin 1s linear infinite;
+}
+
+.formButton.showBtnLoading .button-text {
+  visibility: hidden;
+  opacity: 0;
+}
+
 
 /* Footer */
 .footer {
