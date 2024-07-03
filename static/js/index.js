@@ -323,9 +323,8 @@ async function searchAttractions(keyword) {
   newNextPage = null;
 
   //顯示搜尋結果，稍微延遲
-  setTimeout(() => {
-    displayAttractions(results, keyword);
-  },  200)
+  displayAttractions(results, keyword);
+  
 }
 
 
