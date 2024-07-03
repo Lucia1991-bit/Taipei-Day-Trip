@@ -22,6 +22,12 @@ function displayOrderNumber() {
 async function init() {
   //檢查使用者登入狀態
   const isAuthUser = await checkUserStatus();
+
+  if (!isAuthUser) {
+    location.href = "/";
+    return;
+  }
+
   //初始化 NavBar
   initNavBar(isAuthUser);
 
