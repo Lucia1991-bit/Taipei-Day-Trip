@@ -21,8 +21,8 @@ def extract_data(data, keys):
 
 # 向 TapPay API 發送付款請求
 async def process_tappay_payment(prime, order_number, total_price, contact_name, contact_email, contact_phone, attraction_names_str):
-    print(order_number)
     print("送請求到TapPay")
+
     headers = {
         "Content-Type": "application/json",
         "x-api-key": PARTNER_KEY
@@ -59,9 +59,9 @@ async def process_tappay_payment(prime, order_number, total_price, contact_name,
                 data = extract_data(result, needed_keys)
                 return data
             else:
-                print("送請求到TapPayAPI發生問題")
-                raise PaymentError("TapPay API 請求失敗")
+                print("連線到TapPayAPI發生問題")
+                raise PaymentError
 
     except Exception as e:
         print("其他錯誤")
-        raise PaymentError(f"處理支付時發生錯誤: {str(e)}")
+        raise PaymentError

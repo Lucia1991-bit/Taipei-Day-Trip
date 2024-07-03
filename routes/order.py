@@ -43,7 +43,7 @@ async def create_orders(request: Request, current_user: dict = Depends(verify_to
 
         # 如果新增失敗
         if add_result["affected_rows"] == 0:
-            raise OrderCreationError("資料庫發生錯誤，訂單創建失敗")
+            raise OrderCreationError
 
         # 獲取 order_id
         order_id = add_result["last_inserted_id"]
@@ -71,17 +71,17 @@ async def create_orders(request: Request, current_user: dict = Depends(verify_to
 
         # 如果新增失敗
         if add_payment_result["affected_rows"] == 0:
-            raise OrderCreationError("資料庫發生錯誤，付款紀錄創建失敗")
+            raise OrderCreationError
 
         # 付款成功
         if tappay_status == 0:
             # 更新 order資料表的 status欄，由"待付款"改為"已付款"
-            print("更新訂單付款狀態")
+            print("付款成功，更新訂單付款狀態")
             OrderModel.update_order_status("已付款", order_number)
 
         # 付款失敗，印出原因
         else:
-            print(tappay_message)
+            print("付款失敗，原因: ", tappay_message)
 
         # 套用 pydantic model 整理資料
         order = OrderResponseDetail(
@@ -99,9 +99,9 @@ async def create_orders(request: Request, current_user: dict = Depends(verify_to
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"格式錯誤: {e}")).dict(), status_code=400)
     # 訂單創建失敗錯誤處理
     except OrderCreationError as e:
-        return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=500)
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"資料庫新增/修改資料時發生錯誤: {e}")).dict(), status_code=500)
     # 付款失敗錯誤處理
     except PaymentError as e:
-        return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
+        return JSONResponse(content=ErrorResponse(error=True, message=str(f"連線至TapPay發生問題，付款失敗: {e}")).dict(), status_code=400)
     except Exception as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(f"伺服器發生錯誤：{e}")).dict(), status_code=500)
