@@ -1,9 +1,11 @@
 body {
   background-color: var(--gray10);
+  overflow-x: hidden;
 }
 
 main {
   flex: 1;
+  overflow-x: hidden;
 }
 
 main.no-data {

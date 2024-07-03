@@ -1,21 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 
-
 body {
-  background: url("https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1720008624/photo-1470004914212-05527e49370b_tt7uct.avif") no-repeat center top/cover;
+  background: url("https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1720008624/photo-1470004914212-05527e49370b_tt7uct.avif") no-repeat center center fixed;
+  background-size: cover;
+  width: 100%;
   min-height: 100vh;
+  background-attachment: fixed;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .nav {
   box-shadow: none;
-  background-color: transparent;
+  /* background-color: transparent; */
 }
 
-.nav_title, 
+/* .nav_title, 
 .nav_list_item {
   color: var(--light);
-}
+} */
 
 .image_overlay {
   position: absolute;
@@ -29,11 +33,13 @@ body {
 main {
   flex: 1; 
   padding: 40px 0;
+  width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
 }
 
 .main_container {
@@ -62,7 +68,7 @@ main {
   padding: 20px;
   height: 600px;
   background-color: var(--gray10);
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: var(--light);
   border-radius: 10px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
   backdrop-filter: blur(6px);
@@ -151,17 +157,23 @@ main {
 
 @media (max-width: 600px) {
 
-   .hamburger-menu > div {
-      background-color: var(--light);
-   }
-
-  .hamburger-menu > div::before,
-  .hamburger-menu > div::after {
-    background-color: var(--light);
+  .order_container {
+    width: 360px;
+    margin: 0 20px;
   }
 
-   .mobile_nav_list {
-    background-color: transparent;
-   }
+  .thank_you_image {
+    width: 330px;
+    height: auto;
+  }
+
+  .thank_you_title {
+    font-size: 50px;
+  }
+
+  .order_info_number {
+    font-size: 25px;
+  }
+
 
 }
