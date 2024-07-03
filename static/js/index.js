@@ -325,7 +325,7 @@ async function searchAttractions(keyword) {
   //顯示搜尋結果，稍微延遲
   setTimeout(() => {
     displayAttractions(results, keyword);
-  },  300)
+  },  200)
 }
 
 
@@ -359,10 +359,9 @@ async function init() {
   displayMrtList(mrtResults);
 
   //獲取並顯示景點資料
-  setTimeout(async() => {
-    const results = await fetchAttractionData();
-    displayAttractions(results);
-  }, 300)
+  const results = await fetchAttractionData();
+  displayAttractions(results);
+  
 
   //檢查使用者登入狀態
   const isAuthUser = await checkUserStatus();
