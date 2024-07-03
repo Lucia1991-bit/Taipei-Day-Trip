@@ -26,12 +26,15 @@ async def register_user(request: Request, register_input: SignUpRequest = Body(.
     try:
         if UserModel.get_user_by_email(email):
             raise ValueError("這個電子信箱已被註冊")
-            # return JSONResponse(content=ErrorResponse(error=True, message="這個電子信箱已被註冊").dict(), status_code=400)
 
         # 若沒被註冊過，將註冊會員資料加入資料庫
-        UserModel.add_new_member(name, email, password)
+        result = UserModel.add_new_member(name, email, password)
 
-        return SuccessResponse(ok=True)
+        if result["affected_rows"] > 0:
+            return SuccessResponse(ok=True)
+
+        else:
+            return JSONResponse(content=ErrorResponse(error=True, message="註冊失敗，請稍後再試").dict(), status_code=500)
 
     except ValueError as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)

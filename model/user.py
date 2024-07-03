@@ -20,9 +20,8 @@ class UserModel:
         sql = "INSERT INTO member (name, email, password) VALUES(%s, %s, %s)"
         values = (name, email, hashed_password)
 
-        execute_query(sql, values)
         print("新增會員資料")
-        return
+        return execute_query(sql, values)
 
     # 驗證密碼
     def verify_password(plain_password, hashed_password):

@@ -1,17 +1,20 @@
 //fetchData Module
 import { fetchBooking, deleteBooking } from "./api/bookingRequest.js";
+import { createOrder } from "./api/orderRequest.js";
 //檢查使用者登入狀態 Module
 import { checkUserStatus } from "./auth/userStatus.js";
 //NavBar以及註冊/登入相關 Module
 import { initNavBar } from "./navBar.js";
-//topPay config
-import { config } from "./config/topPay_config.js";
+//初始化TapPay
+import { initTopPay, checkCreditCard } from "./config/topPay_config.js";
 //spinner loading 相關
 import { showSpinner, hideSpinner } from "./view/spinnerLoading.js";
 //驗證 信箱、手機 Module
-import { isValidEmail, isValidPhone } from "./auth/validate.js";
+import { isValidName, isValidEmail, isValidPhone } from "./auth/validate.js";
 //顯示按鈕 loading
 import { showButtonLoading, hideButtonLoading } from "./view/buttonLoading.js";
+//改變輸入欄位狀態
+import { updateFieldStatus } from "./view/fieldStatus.js";
 
 
 console.log("attraction.js運行中");
@@ -81,6 +84,7 @@ function removeBookingItemFromDOM(bookingItem) {
 
   // 檢查是否還有預定行程
   const remainingGroups = document.querySelectorAll(".booking_group");
+
 
   // 如果刪除後行程變成空的,回復到沒有資料的頁面狀態
   if (remainingGroups.length === 0) {
@@ -228,7 +232,6 @@ function createBookingItem(booking) {
   return bookingContainer;
 }
 
-
 //顯示預定資料在畫面上
 async function displayBooking(results, userData) {
   const textEL = document.querySelector(".heading p");
@@ -294,7 +297,6 @@ async function displayBooking(results, userData) {
 
     //計算價格
     totalPrice += booking.price;
-
   })
 
   //迴圈結束，把最後一個分組加進 DOM
@@ -304,7 +306,6 @@ async function displayBooking(results, userData) {
     
   //更新總價格
   updateTotalPrice(); 
-
 }
 
 //改變歡迎詞用戶名
@@ -316,153 +317,6 @@ function updateUserName(userData) {
   const welcomeText = document.querySelector("h2.booking_info_title");
   welcomeText.textContent = `您好，${name}，待預訂的行程如下：`;
 }
-
-//檢查信用卡是什麼卡，並顯示在畫面上
-function handleCardType(cardType) {
-
-  let imageSrc = "/static/image/card/card_default.svg";
-  
-  switch(cardType) { 
-    case "visa":
-      imageSrc = "/static/image/card/card_visa.png";
-      break;
-
-    case "mastercard":
-      imageSrc = "/static/image/card/card_mastercard.png";
-      break;
-
-    case "jcb":
-      imageSrc = "/static/image/card/card_jcb.svg";
-      break;
-
-    case "amex":
-      imageSrc = "/static/image/card/card_amex.png";
-      break;
-
-    case "unionpay":
-      imageSrc = "/static/image/card/card_union_pay.png";
-      break;
-  }
-
-  return imageSrc;
-}
-
-//驗證輸入，如果無效，將錯誤結果顯示在畫面上(輸入框抖動)
-function updateFieldStatus(element, status) {
-  //移除原本的 class
-  element.classList.remove("has-error", "shake-effect");
-
-  switch(status) {
-    case 2:
-      element.classList.add("has-error", "shake-effect");
-      break;
-    
-    case false:
-      element.style.color = "red";
-      element.classList.add("has-error", "shake-effect");
-      setTimeout(() => {
-        element.classList.remove("shake-effect")
-      }, 300)
-      break;
-
-    case true:
-      console.log("是正確的！");
-      element.classList.remove("has-error", "shake-effect");
-      element.style.color = "green";
-      break;
-  }
-}
-
-//驗證信用卡
-function checkCreditCard(update) {
-  const cardTypeEL = document.querySelector(".card-type");
-  const cardImage = document.querySelector(".card-type img");
-  const submitButton = document.querySelector(".submitBtn");
-  const numberInput = document.getElementById("card-number");
-  const expiryInput = document.getElementById("card-expiration-date");
-  const cvvInput = document.getElementById("card-ccv");
-
-  // 控制提交按鈕
-  //canGetPrime: 如果所有信用卡欄位都是 true會返回 true
-  submitButton.disabled = !update.canGetPrime;
-
-  //處理信用卡類型，在畫面顯示是什麼卡
-  const imageSrc = handleCardType(update.cardType);
-  cardImage.src = imageSrc;
-
-  //驗證卡號
-  updateFieldStatus(numberInput, update.status.number);
-  //驗證有效期
-  updateFieldStatus(expiryInput, update.status.expiry);
-  //驗證 CCV
-  updateFieldStatus(cvvInput, update.status.ccv);
-
-}
-
-
-//初始化 TapPay
-function initTopPay() {
-  try {
-    // //設置 TapPay SDK
-    TPDirect.setupSDK(config.APP_ID, config.APP_KEY, "sandbox");
-
-    TPDirect.card.setup({
-            fields: {
-                number: {
-                    element: "#card-number",
-                    placeholder: "**** **** **** ****"
-                },
-                expirationDate: {
-                    element: "#card-expiration-date",
-                    placeholder: "MM / YY"
-                },
-                ccv: {
-                    element: "#card-ccv",
-                    placeholder: "CVV"
-                }
-            },
-            styles: {
-                "input": {
-                    "color": "#666666",
-                    "font-size": "16px"
-                },
-                "input.ccv": {
-                    "font-size": "16px"
-                },
-                ":focus": {
-                    "color": "black"
-                },
-                ".valid": {
-                    "color": "green"
-                },
-                ".invalid": {
-                    "color": "red"
-                },
-                "@media screen and (max-width: 400px)": {
-                    "input": {
-                        "color": "orange"
-                    }
-                }
-            },
-            // 此設定會顯示卡號輸入正確後，會顯示前六後四碼信用卡卡號
-            isMaskCreditCardNumber: true,
-            maskCreditCardNumberRange: {
-                beginIndex: 6, 
-                endIndex: 11
-            }
-        })
-
-    // 監聽卡片更新事件
-    TPDirect.card.onUpdate(function (update) {
-      checkCreditCard(update);
-    });
-
-  } catch(error) {
-    console.error("Error: ", error);
-  }
-
-}
-
 
 //檢查三個欄位是否填寫正確
 //name和 email已經自動填上使用者資料，除非使用者改動，否則預設是true
@@ -488,36 +342,18 @@ function getValidatedContactInfo() {
   }
 }
 
-//監聽聯絡資訊輸入框的輸入
-function checkContactInput() {
-  const nameInput = document.getElementById("contact-name");
-  const emailInput = document.getElementById("contact-email");
-  const phoneInput = document.getElementById("contact-phone");
 
 
-  //檢查姓名欄不能為空
-  nameInput.addEventListener("blur", () => {
-    const name = nameInput.value.trim();
-    console.log(name);
-    isNameValid = name !== "";
-    updateFieldStatus(nameInput, isNameValid);
-  })
+//更新按鈕狀態
+function updateSubmitButtonStatus() {
+  const submitButton = document.querySelector(".submitBtn");
+  const buttonText = document.getElementById("submitBtnText");
+  const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+  const isFormValid = isNameValid && isEmailValid && isPhoneValid && tappayStatus.canGetPrime;
 
-  //檢查信箱格式
-  emailInput.addEventListener("blur", () => {
-    const email = emailInput.value.trim();
-    console.log(email);
-    isEmailValid = isValidEmail(email);
-    updateFieldStatus(emailInput, isEmailValid);
-  })
-
-  //檢查手機格式
-  phoneInput.addEventListener("blur", () => {
-    const phone = phoneInput.value.trim();
-    isPhoneValid = isValidPhone(phone);
-    updateFieldStatus(phoneInput, isPhoneValid);
-  })
-
+  submitButton.disabled = !isFormValid;
+  buttonText.textContent = isFormValid ? "確認付款並訂購" : "請填寫必要資訊";
+  
 }
 
 //獲取 prime，TPDirect.card.getPrime是非同步函數，無法把資料傳出來
@@ -534,6 +370,7 @@ function getPrimePromise() {
   });
 }
 
+
 //訂購表單送出事件
 async function submitOrderForm(currentBooking, totalPrice) {
     // 取得 TapPay Fields 的 status
@@ -547,27 +384,48 @@ async function submitOrderForm(currentBooking, totalPrice) {
 
     try {
       const prime = await getPrimePromise();
-      console.log("獲取prime成功", prime);
 
+      //送出請求將loading顯示在按鈕
+      const submitBtn = document.querySelector(".submitBtn");
+      showButtonLoading(submitBtn);
+
+      
       //創建請求體
       const requestData = {
         prime,
-        totalPrice,
-        currentBooking,
-        contactData
+        order: {
+          total_price: totalPrice,
+          trip: currentBooking,
+          contact: contactData
+        }
       }
 
-      console.log(requestData);
+      //送出請求到後端
+      const result = await createOrder(requestData);
 
-
+      //隱藏按鈕 loading
+      setTimeout(() => {
+        hideButtonLoading(submitBtn);
+      }, 100)
       
+      //如果成功
+      if (result) {
+        //獲取 order_number
+        const { data } = result;
+        const orderNumber = data.number
+
+        //將 order_number 以 query string方式放進網址
+        //導向 thank you 頁面
+        location.href = `/thankyou?number=${orderNumber}`
+      }
 
     } catch(error) {
+      //顯示錯誤訊息
+
       console.error("處理訂單時發生錯誤:", error);
     }
     
 }
-
 
 //加載初始頁面
 async function init() {
@@ -602,9 +460,13 @@ async function init() {
     hideSpinner();
   }, 300)
 
-  //監聽聯絡資訊輸入框的輸入
-  //必須等待畫面render結束才能取得輸入框裡的資料
-  checkContactInput();
+  //初始化表單驗證紀錄
+  isNameValid = true;
+  isEmailValid = true;
+  isPhoneValid = false;
+
+  //初始化按鈕狀態
+  updateSubmitButtonStatus();
 
   //監聽訂購表單送出事件
   const submitButton = document.querySelector(".submitBtn");
@@ -612,8 +474,41 @@ async function init() {
     //處理送出表單
     submitOrderForm(currentBooking, totalPrice);
   })
-
-
 }
  
 document.addEventListener("DOMContentLoaded", init);
+
+
+//監聽聯絡資訊輸入，必須確保頁面加載完成後再監聽
+const nameInput = document.getElementById("contact-name");
+const emailInput = document.getElementById("contact-email");
+const phoneInput = document.getElementById("contact-phone");
+
+//檢查姓名欄不能為空
+nameInput.addEventListener("blur", () => {
+  const name = nameInput.value.trim();
+  isNameValid = isValidName(name);
+  updateFieldStatus(nameInput, isNameValid);
+  updateSubmitButtonStatus();
+})
+//檢查信箱格式
+emailInput.addEventListener("blur", () => {
+  const email = emailInput.value.trim();
+  isEmailValid = isValidEmail(email);
+  updateFieldStatus(emailInput, isEmailValid);
+  updateSubmitButtonStatus();
+})
+//檢查手機格式
+phoneInput.addEventListener("blur", () => {
+  const phone = phoneInput.value.trim();
+  isPhoneValid = isValidPhone(phone);
+  updateFieldStatus(phoneInput, isPhoneValid);
+  updateSubmitButtonStatus();
+})
+
+
+// 監聽信用卡資訊更新事件
+TPDirect.card.onUpdate(function (update) {
+  checkCreditCard(update);
+  updateSubmitButtonStatus();
+});

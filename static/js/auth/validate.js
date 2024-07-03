@@ -1,9 +1,14 @@
+// 檢查姓名格式
+function isValidName(name) {
+    // 移除首尾空白並檢查是否為空
+    return name.trim() !== "";
+}
+
 //檢查信箱格式
 function isValidEmail(email) {
   const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
   return emailPattern.test(email);
 }
-
 
 //檢查手機格式
 function isValidPhone(phone) {
@@ -11,4 +16,4 @@ function isValidPhone(phone) {
   return phonePattern.test(phone);
 }
 
-export { isValidEmail, isValidPhone };
+export { isValidName, isValidEmail, isValidPhone };

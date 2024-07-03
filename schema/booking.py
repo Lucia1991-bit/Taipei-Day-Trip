@@ -46,6 +46,7 @@ data_dict = {
     'time': '上半天',
     'price': 2000
 }
+
 try:
     booking = BookingRequest(**data_dict)
     print("成功")

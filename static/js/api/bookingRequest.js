@@ -1,5 +1,7 @@
 //獲取 localStorage的 TOKEN Module
 import { getToken } from "../auth/getToken.js";
+//顯示成功／錯誤訊息 Module
+import { showStatusMessage } from "../view/showMessage.js";
 
 const TOKEN = getToken();
 
@@ -87,16 +89,5 @@ async function deleteBooking(bookingId) {
   }
 
 }
-
-//創建 Order
-async function createOrder(requestData) {
-  try {
-
-  } catch(error) {
-
-  }
-}
-  
-
 
 export { createBooking, fetchBooking, deleteBooking };

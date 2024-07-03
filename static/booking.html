@@ -203,7 +203,7 @@
 
           <div class="form_control">
             <label for="name">聯絡姓名：</label>
-            <input type="text" name="name" id="contact-name" required>
+            <input type="text" name="name" maxlength="10" id="contact-name" required>
           </div>
 
           <div class="form_control">
@@ -213,7 +213,7 @@
 
           <div class="form_control">
             <label for="name">手機號碼：</label>
-            <input type="text" name="phone" id="contact-phone" required>
+            <input type="text" name="phone" maxlength="10" id="contact-phone" required>
           </div>
 
           <div class="booking_contact_text bold">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
@@ -230,7 +230,6 @@
             <label>卡片號碼：</label>
             <div class="tpfield" id="card-number" aria-label="卡片號碼"></div>
             <div class="card-type"><img src="/static/image/card/card_default.svg" alt="card"></div>
-
           </div>
 
           <div class="form_control">
@@ -251,7 +250,7 @@
         <div class="total_price_container">
           <span class="total_price bold">總價：新台幣 2000 元</span>
           <button type="submit" class="submitBtn">
-            <span class="button-text">確認訂購並付款</span>
+            <span class="button-text" id="submitBtnText">確認付款並訂購</span>
             <span class="buttonSpinner"></span>
           </button>
         </div>

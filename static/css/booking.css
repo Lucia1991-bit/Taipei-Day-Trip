@@ -275,10 +275,26 @@ h3.booking_info_title {
 .submitBtn {
   padding: 10px 20px;
   border-radius: 5px;
+  width: 150px;
+  height: 40px;
   border: none;
+  position: relative;
   background-color: var(--cyan70);
   color: var(--light);
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, transform 0.1s;
+}
+
+.button-text {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .submitBtn:hover {
@@ -289,7 +305,21 @@ h3.booking_info_title {
   transform: scale(0.95);
 }
 
+.submitBtn:disabled {
+  background-color: var(--gray20); /* 禁用狀態的背景顏色 */
+  color: var(--gray40);
+  cursor: not-allowed; /* 禁用狀態的滑鼠指標 */
+  pointer-events: none; /* 禁用狀態下禁用所有互動效果 */
+}
+
 /* Button Loading */
+.submitBtn.showBtnLoading {
+  background-color: var(--cyan80);
+  cursor: wait;
+  pointer-events: none;
+}
+
+
 .submitBtn.showBtnLoading .buttonSpinner {
   opacity: 1;
   visibility: visible;
