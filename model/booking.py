@@ -45,7 +45,7 @@ class BookingModel:
         else:
             # 檢查是否有時間衝突的預訂
             print("檢查是否有時間衝突的預訂")
-            sql = "SELECT id FROM booking WHERE member_id = %s AND date = %s AND time = %s"
+            sql = "SELECT id FROM booking WHERE member_id = %s AND date = %s AND time = %s AND order_id is NULL"
             values = (user_id, date, time)
 
         result = execute_query(sql, values)

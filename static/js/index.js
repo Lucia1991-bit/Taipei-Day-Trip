@@ -324,9 +324,7 @@ async function searchAttractions(keyword) {
 
   //顯示搜尋結果，稍微延遲
   displayAttractions(results, keyword);
-  
 }
-
 
 //顯示錯誤訊息
 function showErrorMessage(message) {

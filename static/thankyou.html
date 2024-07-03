@@ -13,6 +13,9 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
+  <!-- 背景圖預先加載 -->
+  <link rel="preload" href="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1720008624/photo-1470004914212-05527e49370b_tt7uct.avif" as="image" fetchpriority="high">
+
   <title>訂購成功</title>
 </head>
 <body>
@@ -122,26 +125,42 @@
   <!-- Main Section -->
   <main>
     <div class="main_container">
-      <div class="header_image">
-        <img src="" alt="">
-      </div>
-
       <div class="order_container">
-        <div class="order_info">
-
+        <div class="thank_you_image">
+          <img src="/static/image/thank-you/thankyouai.svg" alt="trip">
         </div>
+
+        <h3 class="thank_you_title">Have a Nice Trip !</h3>
+
+        <div class="order_info">
+           <span class="order_info_title">行程訂購成功</span>
+           <p>以下為您的訂單編號</p>
+           <h3 class="order_info_number">ORD201483948</h3>
+        </div>
+
+        <div class="reminder_text">請記住此編號，或到
+          <span class="reminder_link">會員中心</span> 查詢歷史訂單
+        </div>
+
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="footer no-data">
-    <p class="footer_text no-data">COPYRIGHT © 2021 台北一日遊</p>
+  <footer class="footer">
+    <p class="footer_text">COPYRIGHT © 2021 台北一日遊</p>
   </footer>
+
+  
+  <!-- 背景圖片遮罩 -->
+   <div class="image_overlay"></div>
+
 
   <!-- 遮罩，最後一個讀取的元素會覆蓋在最上面 -->
   <div class="overlay"></div> 
   <div class="mobileOverlay"></div>
+
+  <script type="module" src="/static/js/thankyou.js"></script>
 
 </body>
 </html>
