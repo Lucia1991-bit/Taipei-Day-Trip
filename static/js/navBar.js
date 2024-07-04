@@ -7,6 +7,7 @@ async function initNavBar(userStatus) {
   const navLoginBtn = document.getElementById("nav_loginBtn");
   const mobileNavLoginBtn = document.getElementById("mobile_nav_loginBtn");
   const navBookingBtn = document.getElementById("nav_bookingBtn");
+  const mobileNavBookingBtn = document.getElementById("mobile_nav_bookingBtn");
 
     //監聽登入/註冊視窗
     initModal();
@@ -29,8 +30,7 @@ async function initNavBar(userStatus) {
    } 
 
    //檢查登入狀態，若沒登入，顯示登入/註冊頁面。若已登入，導入 booking頁面
-   const bookingBtn = document.getElementById("nav_bookingBtn");
-   bookingBtn.addEventListener("click", () => {
+   navBookingBtn.addEventListener("click", () => {
       if (!userStatus) {
         showLoginModal();
       }
@@ -38,6 +38,17 @@ async function initNavBar(userStatus) {
         location.href = "/booking";
       }
    });
+
+
+   mobileNavBookingBtn.addEventListener("click", () => {
+      if (!userStatus) {
+        showLoginModal();
+      }
+      else {
+        location.href = "/booking";
+      }
+   });
+
 }
 
 export { initNavBar };

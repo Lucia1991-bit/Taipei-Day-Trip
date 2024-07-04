@@ -3,9 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You</title>
+  <link rel="stylesheet" href="/static/css/utility.css">
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="/static/css/thankyou.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <!-- 背景圖預先加載 -->
+  <link rel="preload" href="https://res.cloudinary.com/dwlnu1s9a/image/upload/f_auto,q_auto,w_auto,c_scale/v1720008624/photo-1470004914212-05527e49370b_tt7uct.avif" as="image" fetchpriority="high">
+
+  <title>訂購成功</title>
 </head>
 <body>
+  <!-- Pop up Sign Up/ Login Section -->
+  <div class="popup_container"> 
+    <!-- Login -->
+     <!-- 加 x -->
+    <section class="login" id="login">
+      <div class="form_decoLine"></div>
+
+      <div class="form_container">
+        <div class="form_exit_button"><i class="fa-solid fa-x"></i></div>
+        <h3 class="form_title">登入會員帳號</h3>
+
+        <form id="loginForm" class="form">
+          <div class="form_control">
+            <!-- <div class="validate_error"><i class="fa-solid fa-circle-exclamation"></i></div> -->
+            <input id="login-email" type="email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form_control">
+
+            <input id="login-password" type="password" name="password" placeholder="輸入密碼" required>
+          </div>
+          <button type="submit" class="formButton" id="loginBtn">
+            <span class="button-text">登入帳戶</span>
+            <span class="buttonSpinner"></span>
+          </button>
+
+          <div class="form_linkContent" id="loginLinkContent">
+              還沒有帳戶？
+              <span class="link" id="signupLink">點此註冊</span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Signup -->
+    <section class="signup" id="signup">
+      <div class="form_decoLine"></div>
+
+      <div class="form_container">
+        <div class="form_exit_button"><i class="fa-solid fa-x"></i></div>
+        <h3 class="form_title">註冊會員帳號</h3>
+
+        <form id="signupForm" class="form">
+          <div class="form_control">
+            <input id="signup-name" type="text" name="name" placeholder="輸入姓名" required>
+          </div>
+          <div class="form_control">
+            <input id="signup-email" type="email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form_control">
+            <input id="signup-password" type="password" name="password" placeholder="輸入密碼" required>
+          <button type="submit" class="formButton button" id="signupBtn">
+            <span class="button-text">註冊新帳戶</span>
+            <span class="buttonSpinner"></span>
+          </button>
+          <!-- <div class="form_message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p>信箱輸入錯誤</p>
+          </div> -->
+          <div class="form_linkContent" id="signupLinkContent">
+              已經有帳戶了？
+              <span class="link" id="loginLink">點此登入</span>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation Section-->
+  <nav class="nav">
+    <div class="nav_container">
+      <!-- Nav 標題 -->
+      <a class="nav_title_link" href="/">
+        <h2 class="nav_title">台北一日遊</h2>
+      </a>
+      <!-- Nav選單 -->
+      <ul class="nav_list">
+        <!-- 按鈕 -->
+        <li class="nav_list_item" id="nav_bookingBtn">
+          <span class="nav_list_item--btn">預訂行程</span>
+        </li>
+        <li class="nav_list_item" id="nav_loginBtn">
+          <span class="nav_list_item--btn">登入/註冊</span>
+        </li>
+      </ul>
+
+      <!-- Hamberger icon for Mobile Device -->
+      <div class="hamburger-menu">
+        <div></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Navbar for Mobile Device-->
+  <ul class="mobile_nav_list">
+    <div></div>
+    <li class="nav_list_item" id="mobile_nav_bookingBtn">
+      <span>預訂行程</span>
+    </li>
+    <li class="nav_list_item" id="mobile_nav_loginBtn">
+      <span>登入/註冊</span>
+    </li>
+  </ul>
+
+  <!-- Main Section -->
+  <main>
+    <div class="main_container">
+      <div class="order_container">
+        <div class="thank_you_image">
+          <img src="/static/image/thank-you/thankyouai.svg" alt="trip">
+          <h3 class="thank_you_title">Have a Nice Trip !</h3>
+        </div>
+
+        <div class="order_info">
+           <span class="order_info_title">行程訂購成功</span>
+           <p>以下為您的訂單編號</p>
+           <h3 class="order_info_number">ORD201483948</h3>
+        </div>
+
+        <div class="reminder_text">請記住此編號，或到
+          <span class="reminder_link">會員中心</span> 查詢歷史訂單
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="footer_text">COPYRIGHT © 2021 台北一日遊</p>
+  </footer>
+
   
+  <!-- 背景圖片遮罩 -->
+   <div class="image_overlay"></div>
+
+
+  <!-- 遮罩，最後一個讀取的元素會覆蓋在最上面 -->
+  <div class="overlay"></div> 
+  <div class="mobileOverlay"></div>
+
+  <script type="module" src="/static/js/thankyou.js"></script>
+
 </body>
 </html>

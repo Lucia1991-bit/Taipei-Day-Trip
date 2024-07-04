@@ -2,7 +2,7 @@
 // import { updateBannerUrl } from "./data/handleBannerUrl.js";
 
 //fetchData Module
-import { fetchAttractionData, fetchMrtData } from "./api/fetchData.js";
+import { fetchAttractionData, fetchMrtData } from "./api/attractionRequest.js";
 //Skeleton loading相關 Module
 import { showSkeletonLoading, hideSkeletonLoading } from "./view/skeletonLoading.js";
 //檢查使用者登入狀態 Module
@@ -323,11 +323,8 @@ async function searchAttractions(keyword) {
   newNextPage = null;
 
   //顯示搜尋結果，稍微延遲
-  setTimeout(() => {
-    displayAttractions(results, keyword);
-  },  300)
+  displayAttractions(results, keyword);
 }
-
 
 //顯示錯誤訊息
 function showErrorMessage(message) {
@@ -359,10 +356,9 @@ async function init() {
   displayMrtList(mrtResults);
 
   //獲取並顯示景點資料
-  setTimeout(async() => {
-    const results = await fetchAttractionData();
-    displayAttractions(results);
-  }, 300)
+  const results = await fetchAttractionData();
+  displayAttractions(results);
+  
 
   //檢查使用者登入狀態
   const isAuthUser = await checkUserStatus();

@@ -21,7 +21,7 @@ database_config = {
 pool = MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=20,
-    connection_timeout=300,  # 單位為秒
+    connection_timeout=600,  # 單位為秒
     ** database_config
 )
 
@@ -58,16 +58,27 @@ def execute_query(query, values=None, fetch_method="fetchone"):
                 else:
                     cursor.execute(query)
 
-                # 可控制cursor.fetchone()或者cursor.fetchall()
-                fetch_function = getattr(cursor, fetch_method)
-                result = fetch_function()
+                # 判斷查詢類型
+                query_type = query.lstrip().upper().split()[0]
 
-                # 如果 SQL語句開頭不是 SELECT，執行新增/刪除指令
-                if not query.lstrip().upper().startswith("SELECT"):
+                # 查詢操作
+                if query_type == "SELECT":
+                    # 可控制cursor.fetchone()或者cursor.fetchall()
+                    fetch_function = getattr(cursor, fetch_method)
+                    result = fetch_function()
+                    return result
+                else:
+                    # 插入、更新或刪除操作
                     db.commit()
-                    print("新增/刪除資料成功")
+                    affected_rows = cursor.rowcount
+                    last_id = cursor.lastrowid if query_type == "INSERT" else None
 
-                return result
+                    print(f"{query_type} 操作，影響的行數：{affected_rows}")
+
+                    return {
+                        "affected_rows": affected_rows,
+                        "last_inserted_id": last_id
+                    }
 
         except mysql.connector.Error as e:
             # 如果操作失敗，回到操作前的狀態

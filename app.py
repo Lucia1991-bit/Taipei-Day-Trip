@@ -2,7 +2,7 @@ from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from typing import Union
-from routes import attraction, mrt, user, booking
+from routes import attraction, mrt, user, booking, order
 from schema.error_success import *
 from fastapi.staticfiles import StaticFiles
 
@@ -14,6 +14,7 @@ app.include_router(attraction.router, tags=["Attraction"])
 app.include_router(mrt.router, tags=["MRT Station"])
 app.include_router(user.router, tags=["User"])
 app.include_router(booking.router, tags=["Booking"])
+app.include_router(order.router, tags=["Order"])
 
 
 # 渲染靜態檔

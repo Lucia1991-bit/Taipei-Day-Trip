@@ -36,8 +36,9 @@
 
             <input id="login-password" type="password" name="password" placeholder="輸入密碼" required>
           </div>
-          <button type="submit" class="formButton button">
-            登入帳戶
+          <button type="submit" class="formButton" id="loginBtn">
+            <span class="button-text">登入帳戶</span>
+            <span class="buttonSpinner"></span>
           </button>
 
           <div class="form_linkContent" id="loginLinkContent">
@@ -66,8 +67,9 @@
           <div class="form_control">
             <input id="signup-password" type="password" name="password" placeholder="輸入密碼" required>
           </div>
-          <button type="submit" class="formButton button">
-            註冊新帳戶
+          <button type="submit" class="formButton button" id="signupBtn">
+            <span class="button-text">註冊新帳戶</span>
+            <span class="buttonSpinner"></span>
           </button>
           <!-- <div class="form_message">
             <i class="fa-solid fa-circle-exclamation"></i>
@@ -201,17 +203,17 @@
 
           <div class="form_control">
             <label for="name">聯絡姓名：</label>
-            <input type="text" name="name" id="name" required>
+            <input type="text" name="name" maxlength="10" id="contact-name" required>
           </div>
 
           <div class="form_control">
             <label for="email">聯絡信箱：</label>
-            <input type="email" name="email" id="email" required>
+            <input type="email" name="email" id="contact-email" required>
           </div>
 
           <div class="form_control">
             <label for="name">手機號碼：</label>
-            <input type="text" name="phone" id="phone" required>
+            <input type="text" name="phone" maxlength="10" id="contact-phone" required>
           </div>
 
           <div class="booking_contact_text bold">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
@@ -225,18 +227,19 @@
           <h3 class="booking_info_title">信用卡付款資訊</h3>
 
           <div class="form_control">
-            <label for="card">卡片號碼：</label>
-            <input type="text" name="card" id="card" placeholder="**** **** ****">
+            <label>卡片號碼：</label>
+            <div class="tpfield" id="card-number" aria-label="卡片號碼"></div>
+            <div class="card-type"><img src="/static/image/card/card_default.svg" alt="card"></div>
           </div>
 
           <div class="form_control">
-            <label for="expTime">過期時間：</label>
-            <input type="text" name="expTime" id="expTime" placeholder="MM / YY" required>
+            <label>過期時間：</label>
+            <div class="tpfield" id="card-expiration-date" aria-label="過期時間"></div>
           </div>
 
           <div class="form_control">
-            <label for="cvv">驗證密碼：</label>
-            <input type="text" name="cvv" id="cvv" placeholder="CVV">
+            <label>驗證密碼：</label>
+            <div class="tpfield" id="card-ccv" aria-label="驗證密碼"></div>
           </div>
 
         </section>
@@ -246,21 +249,15 @@
 
         <div class="total_price_container">
           <span class="total_price bold">總價：新台幣 2000 元</span>
-          <button type="submit" class="submitBtn">確認訂購並付款</button>
+          <button type="submit" class="submitBtn">
+            <span class="button-text" id="submitBtnText">確認付款並訂購</span>
+            <span class="buttonSpinner"></span>
+          </button>
         </div>
 
       </div>
 
     </div>
-<!-- 
-    <section class="main_container skeleton_container">
-      <span class="booking_info_title loading">&nbsp;</span>
-      <span class="booking_info_text loading">&nbsp;</span>
-
-
-
-
-    </section> -->
 
   </main>
 
@@ -274,6 +271,7 @@
   <div class="mobileOverlay"></div>
 
   <script type="module" src="/static/js/booking.js"></script>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.17.1"></script>
   
 </body>
 </html>

@@ -4,6 +4,7 @@ from utility.database import execute_query
 
 class BookingModel:
     # 獲取尚未下單的預定行程
+    # 選取 order_id 為 null 代表還沒成立訂單，並免重複下訂
     def get_booking_data(user_id: int):
         sql = """
         SELECT 
@@ -20,7 +21,7 @@ class BookingModel:
         JOIN 
           attraction_view a ON b.attraction_id = a.id
         WHERE 
-          b.member_id = %s
+          b.member_id = %s AND b.order_id is NULL 
         ORDER BY 
           b.date DESC, b.time ASC;
         """
@@ -44,7 +45,7 @@ class BookingModel:
         else:
             # 檢查是否有時間衝突的預訂
             print("檢查是否有時間衝突的預訂")
-            sql = "SELECT id FROM booking WHERE member_id = %s AND date = %s AND time = %s"
+            sql = "SELECT id FROM booking WHERE member_id = %s AND date = %s AND time = %s AND order_id is NULL"
             values = (user_id, date, time)
 
         result = execute_query(sql, values)
@@ -65,4 +66,24 @@ class BookingModel:
         DELETE FROM booking WHERE id = %s
         """
         values = (booking_id,)
+        return execute_query(sql, values)
+
+    # 將確定的行程加入 order_id 與 orders資料表關聯
+    def add_order_id_into_booking_table(
+            user_id, booking_ids, order_id):
+
+        # 用 IN 子句處理複數 booking_id的複數查詢
+        # 佔位符數量必須跟 booking_ids相同
+        #  "%s, %s, %s"   <--   ["%s", "%s", "%s"]
+        placeholder = ",".join(["%s"] * len(booking_ids))
+
+        sql = f"""
+        UPDATE booking
+        SET order_id = %s
+        WHERE id IN ({placeholder}) AND member_id = %s AND order_id IS NULL
+        """
+        # 將列表轉換成字串後再合併為以逗號分開的字串組
+        values = (order_id,) + tuple(booking_ids) + (user_id,)
+
+        print("在booking資料表更新order_id")
         return execute_query(sql, values)

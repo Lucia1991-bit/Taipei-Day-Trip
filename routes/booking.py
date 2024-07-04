@@ -3,14 +3,14 @@ from fastapi.responses import JSONResponse
 from typing import Union
 from schema.booking import *
 from schema.error_success import *
+from schema.order import *
 from utility.auth import verify_token_to_get_user
 from model.booking import BookingModel
 
 router = APIRouter()
 
+
 # 獲取預定行程
-
-
 @router.get("/api/booking")
 async def get_booking(request: Request, current_user: dict = Depends(verify_token_to_get_user)) -> Union[BookingResponse, ErrorResponse]:
     if current_user is None:
@@ -50,7 +50,6 @@ async def get_booking(request: Request, current_user: dict = Depends(verify_toke
 # 新增預定行程
 @router.post("/api/booking")
 async def create_booking(request: Request, current_user: dict = Depends(verify_token_to_get_user), booking_input: BookingRequest = Body(...)) -> Union[SuccessResponse, ErrorResponse]:
-    print(current_user)
     if current_user is None:
         return JSONResponse(content=ErrorResponse(error=True, message="您沒有權限操作此項功能").dict(), status_code=403)
 
@@ -69,8 +68,17 @@ async def create_booking(request: Request, current_user: dict = Depends(verify_t
             return JSONResponse(content=ErrorResponse(error=True, message="新增失敗，該日期同時間段已有預訂").dict(), status_code=400)
 
         # 新增預定行程
-        BookingModel.add_new_booking(user_id, attraction_id, date, time, price)
-        return SuccessResponse(ok=True)
+        result = BookingModel.add_new_booking(
+            user_id, attraction_id, date, time, price)
+
+        if result["affected_rows"] > 0:
+            return SuccessResponse(ok=True)
+
+        else:
+            return JSONResponse(
+                content=ErrorResponse(error=True, message="預定失敗，請稍後再試").dict(),
+                status_code=500
+            )
 
     except ValueError as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)
@@ -94,9 +102,16 @@ async def delete_booking(request: Request, current_user: dict = Depends(verify_t
             raise ValueError("查無此預定或無權限刪除")
 
         # 刪除預定行程
-        BookingModel.delete_booking_data(booking_id)
+        result = BookingModel.delete_booking_data(booking_id)
 
-        return SuccessResponse(ok=True)
+        if result["affected_rows"] > 0:
+            return SuccessResponse(ok=True)
+
+        else:
+            return JSONResponse(
+                content=ErrorResponse(error=True, message="刪除失敗，請稍後再試").dict(),
+                status_code=500
+            )
 
     except ValueError as e:
         return JSONResponse(content=ErrorResponse(error=True, message=str(e)).dict(), status_code=400)

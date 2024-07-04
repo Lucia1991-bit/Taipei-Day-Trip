@@ -1,54 +1,14 @@
+//彈出頁面相關 Module
 import { showLoginModal, hideLoginModal, togglePages } from "./view/popupModal.js";
+//送出註冊 /登入請求到後端 Module
+import { registerUser, loginUser } from "./api/signup_loginRequest.js";
 
-//顯示成功/錯誤訊息
-function showMessage(field, message, type = "success") {
-  const page = document.getElementById(`${field}`);
-  const form = document.getElementById(`${field}Form`);
-  const formLink = document.getElementById(`${field}LinkContent`);
+//顯示成功 /錯誤訊息 Module
+import { showMessage } from "./view/showMessage.js";
 
-  let oldMessage = document.querySelector(".form_message");
+//顯示按鈕 loading
+import { showButtonLoading, hideButtonLoading } from "./view/buttonLoading.js";
 
-  //如果有舊的訊息，則先移除
-  if (oldMessage) {
-    form.removeChild(oldMessage);
-  }
- 
-  let text = document.createElement("p");
-  const div = document.createElement("div");
-  const icon = document.createElement("i");
-
-  // 設定 icon 和 message 的顏色
-  switch (type) {
-    case "success":
-      icon.classList.add("fa-solid", "fa-check-circle");
-      div.classList.add("form_message", "success");
-      break;
-    case "fail":
-      icon.classList.add("fa-solid", "fa-circle-exclamation");
-      div.classList.add("form_message", "fail");
-      break;
-    case "pending":
-      icon.classList.add("fa-solid", "fa-warning");
-      div.classList.add("form_message", "pending");
-      break;
-    default:
-      console.log(`Unknown type: ${type}`);
-      break
-  }
-
-  text.textContent = message;
-
-  div.appendChild(icon);
-  div.appendChild(text);
-  form.insertBefore(div, formLink);
-
-  if (type === 'fail') {
-    page.classList.remove("shake-effect");
-    setTimeout(() => {
-      page.classList.add("shake-effect");
-    }, 100);
-  }
-}
 
 //把表單清乾淨
 function clearForm(field){
@@ -68,43 +28,6 @@ function clearForm(field){
   }
 }
 
-
-//登入使用者
-async function loginUser(requestData) {
-
-  try {
-    const response = await fetch("/api/user/auth", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestData)
-    })
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      // 登入失敗，顯示錯誤訊息
-      if (response.status === 400) {
-        showMessage("login", result.message, "fail");
-      }
-      //輸入格式錯誤，顯示錯誤訊息
-      if (response.status === 422) {
-        showMessage("login", "請輸入正確的電子信箱格式", "fail");
-      }
-
-      throw new Error(result.message);
-    }
-    
-    return result;
-
-  } catch (error) {
-    console.error("Error: ", error)
-  }
-  
-}
-
-
 // 送出登入表單
 async function submitLoginForm(e) {
   e.preventDefault();
@@ -120,8 +43,13 @@ async function submitLoginForm(e) {
     password
   }
 
-  showMessage("login", "驗證中...", "pending");
+  showButtonLoading(loginBtn);
+  // showMessage("login", "驗證中...", "pending");
   const result = await loginUser(requestData);
+
+  setTimeout(() => {  
+    hideButtonLoading(loginBtn);
+  }, 100)
 
   //註冊成功
   if (result) {
@@ -144,41 +72,6 @@ async function submitLoginForm(e) {
     
 }
 
-// 註冊使用者
-async function registerUser(requestData) {
-  try {
-    const response = await fetch("/api/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestData)
-    })
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      // 註冊失敗，顯示錯誤訊息
-      if (response.status === 400) {
-        showMessage("signup", result.message, "fail");
-      }
-
-      //輸入格式錯誤，顯示錯誤訊息
-      if (response.status === 422) {
-        showMessage("signup", "請輸入正確的電子信箱格式", "fail");
-      }
-
-      throw new Error(result.message);
-    }
-
-    return true;
-
-  } catch (error) {
-    console.error("Error: ", error)
-    return false;
-  }
-}
-
 //送出註冊表單
 async function submitSignupForm(e) {
   e.preventDefault();
@@ -192,6 +85,9 @@ async function submitSignupForm(e) {
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
+  const signupBtn = document.getElementById("signupBtn");
+  const loginBtn = document.getElementById("loginBtn");
  
   // //驗證 password 格式
   // const isValidPassword = validatePassword(password);
@@ -210,8 +106,13 @@ async function submitSignupForm(e) {
   }
 
   //送註冊請求到後端
-  showMessage("signup", "驗證中...", "pending");
+  showButtonLoading(signupBtn);
+  // showMessage("signup", "驗證中...", "pending");
   const successStatus = await registerUser(requestData);
+
+  setTimeout(() => {  
+    hideButtonLoading(signupBtn);
+  }, 100)
 
 
   //註冊成功，清空 input

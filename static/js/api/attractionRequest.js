@@ -80,35 +80,6 @@ async function fetchAttractionByID() {
 }
 
 
-//獲取預定資料
-async function fetchBooking() {
-  //從 localStorage獲取 token
-  const TOKEN = getToken();
-
-  try {
-    const response = await fetch("/api/booking", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${TOKEN}`
-      }
-    })
-
-    const results = await response.json();
-
-    if (!response.ok) {
-      throw new Error(results.message);
-    }
-
-    return results;
-
-  } catch (error) {
-    console.log("Error:", error);
-    return null;
-  }
-
-}
-
-
-export {fetchAttractionData, fetchMrtData, fetchAttractionByID, fetchBooking };
+export {fetchAttractionData, fetchMrtData, fetchAttractionByID };
 
 
