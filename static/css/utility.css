@@ -313,6 +313,7 @@ body {
 
 .form_control input:focus {
   outline: none;
+  border: 1px solid var(--cyan50);
 }
 
 /* 表格驗證錯誤 */
