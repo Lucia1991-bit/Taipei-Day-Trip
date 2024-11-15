@@ -38,7 +38,7 @@
 
 ### Home Page
 
-![home](https://res.cloudinary.com/datj4og4i/image/upload/w_800/v1731619217/%E5%8F%B0%E5%8C%97%E4%B8%80%E6%97%A5%E9%81%8A3_wjmukb.gif)
+![home](https://res.cloudinary.com/datj4og4i/image/upload/v1731619217/%E5%8F%B0%E5%8C%97%E4%B8%80%E6%97%A5%E9%81%8A3_wjmukb.gif)
 
 - Attraction keyword search bar
 - MRT station horizontal scrollable list
