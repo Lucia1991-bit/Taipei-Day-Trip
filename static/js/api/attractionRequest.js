@@ -8,14 +8,12 @@ console.log(currentURL);
 
 //獲取景點資料
 async function fetchAttractionData(page = 0, keyword = "") {
-  
   try {
     let url;
 
     //如果沒有關鍵字直接以page請求
     if (!keyword) {
       url = `${currentURL}/api/attractions?page=${page}`;
-
     } else {
       //關鍵字是中文，送到後端前需先編碼
       const encodedKeyword = encodeURIComponent(keyword);
@@ -24,13 +22,12 @@ async function fetchAttractionData(page = 0, keyword = "") {
 
     const response = await fetch(url);
     const results = await response.json();
-  
+
     if (!response.ok) {
-      throw new Error(results.message)
+      throw new Error(results.message);
     }
 
     return results;
-
   } catch (error) {
     console.log("Error:", error);
     return null;
@@ -51,7 +48,6 @@ async function fetchMrtData() {
     console.log("Error:", error);
     return null;
   }
-  
 }
 
 //以景點id獲取景點資料
@@ -61,14 +57,16 @@ async function fetchAttractionByID() {
   const attractionID = parts[parts.length - 1];
 
   try {
-    const response = await fetch(`${currentURL}/api/attraction/${attractionID}`);
+    const response = await fetch(
+      `${currentURL}/api/attraction/${attractionID}`
+    );
     const results = await response.json();
 
     if (!response.ok) {
       //如果查詢的景點 id不存在，導向首頁
       if (response.status === 400) {
         window.location.href = "/";
-      }  
+      }
       throw new Error(results.message);
     }
 
@@ -79,7 +77,4 @@ async function fetchAttractionByID() {
   }
 }
 
-
-export {fetchAttractionData, fetchMrtData, fetchAttractionByID };
-
-
+export { fetchAttractionData, fetchMrtData, fetchAttractionByID };
