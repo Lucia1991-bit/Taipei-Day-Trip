@@ -1,6 +1,7 @@
 # [Taipei Day Trip](http://52.21.45.164/)
 
 **Taipei Day Trip is a full-stack E-commerce Tourism Web Platform.**
+
 Designed to enhance the Taipei exploration experience. The platform seamlessly integrates attraction discovery, tour booking, and secure payment processing, allowing travelers to effortlessly plan their journey through the city.
 
 ![homepage](https://res.cloudinary.com/datj4og4i/image/upload/v1730901196/%E6%88%AA%E5%9C%96_2024-09-16_%E6%99%9A%E4%B8%8A7.55.45_qu8cs0.png)
@@ -82,5 +83,7 @@ Designed to enhance the Taipei exploration experience. The platform seamlessly i
 - Form validation with dynamic feedback
 
 ## API Documentary
+
+API endpoints designed with RESTful standards.
 
 <img src="https://res.cloudinary.com/datj4og4i/image/upload/v1731954522/%E6%88%AA%E5%9C%96_2024-11-18_%E6%99%9A%E4%B8%8A9.23.07_sy3ajx.png" alt="order" width="700"/>
