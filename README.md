@@ -36,9 +36,9 @@ Designed to enhance the Taipei exploration experience. The platform seamlessly i
 
 | **Category**        | **Features**                                                                                                                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Index Page**      | • Attraction search with keyword & MRT filter<br>• Infinite scroll with lazy loading<br>• Skeleton & progressive image loading<br>• JWT authentication system |
-| **Attraction Page** | • Image carousel & detailed information<br>• Smart booking system with time conflict detection<br>• Dynamic pricing display                                   |
-| **Booking System**  | • Date-grouped booking management<br>• TapPay payment integration<br>• Real-time form validation & feedback                                                   |
+| **Index Page**      | ❖ Attraction search with keyword & MRT filter<br>❖ Infinite scroll with lazy loading<br>❖ Skeleton & progressive image loading<br>❖ JWT authentication system |
+| **Attraction Page** | ❖ Image carousel & detailed information<br>❖ Smart booking system with time conflict detection<br>❖ Dynamic pricing display                                   |
+| **Booking System**  | ❖ Date-grouped booking management<br>❖ TapPay payment integration<br>❖ Real-time form validation & feedback                                                   |
 
 ## Tech Stack
 
